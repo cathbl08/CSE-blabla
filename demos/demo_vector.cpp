@@ -1,14 +1,16 @@
 #include <iostream>
 
 #include <vector.hpp>
+#include <matrix.hpp>
 
 namespace bla = ASC_bla;
 
 
 int main()
 {
-  size_t n = 5;
+  size_t n = 5, m = 4;
   bla::Vector<double> x(n), y(n);
+  bla::Matrix<double> A(n,m), B(m,n);
 
   for (size_t i = 0; i < x.Size(); i++)
     {
@@ -25,4 +27,6 @@ int main()
   std::cout << "x-y = " << z2 << std::endl;
   std::cout << "-x = " << z3 << std::endl;
   std::cout << "x*y = " << z4 << std::endl;
+
+
 }
