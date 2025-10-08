@@ -1,3 +1,4 @@
+// prevent multiple inclusions of headerfile
 #ifndef FILE_MATRIX
 #define FILE_MATRIX
 
@@ -10,47 +11,81 @@ namespace ASC_bla
   enum ORDERING { ColMajor, RowMajor };
   template <typename T, ORDERING ORD=RowMajor>
   class Matrix {
+  private:
     size_t rows;
     size_t cols;
     T* data;
     
   public:
+    // constructor
     Matrix (size_t _row, size_t _col) 
       : rows(_row), cols(_col), data(new T[_row * _col]) { ; }
 
-    Matrix (const Matrix & a)
-      : Matrix(a.Size())
+    // copy constructor
+    Matrix (const Matrix & A)
+      : Matrix(A.Rows(), A.Cols())
     {
-      *this = a;
+      *this = A;
     }
 
-    Matrix (Matrix && a)
+    // move constructor
+    Matrix (Matrix && A)
       : size(0), data(nullptr)
     {
-      std::swap(rows, a.rows);
-      std::swap(cols, a.cols);
-      std::swap(data, a.data);
+      std::swap(rows, A.Rows());
+      std::swap(cols, A.Cols());
+      std::swap(data, A.data);
     }
 
+    // destructor
     ~Matrix () { delete [] data; }
     
-    Vector & operator=(const Vector & v2)
+    // assignment operator (copy)
+    Matrix & operator=(const Matrix & A2)
     {
-      for (size_t i = 0; i < size; i++)
-        data[i] = v2(i);
+      if constexpr (ORD == RowMajor){
+        for (size_t i = 1; i <= A2.Rows(); i++){
+          for (size_t j = 1; j <= A2.Cols(); j++){
+            data[(i-1)*cols + (j-1)] = A2(i,j);
+          }
+        }
+      }
+      else{
+        for (size_t i = 1; i <= A2.Rows(); i++){
+          for (size_t j = 1; j <= A2.Cols(); j++){
+            data[(j-1)*rows + (i-1)] = A2(i,j);
+          }
+        }
+      }
+
       return *this;
     }
 
-    Vector & operator= (Vector && v2)
+    // assignment operator (move)
+    Matrix & operator= (Matrix && A2)
     {
-      std::swap(size, v2.size);
-      std::swap(data, v2.data);
+      std::swap(rows, A2.rows);
+      std::swap(cols, A2.cols);
+      std::swap(data, A2.data);
       return *this;
     }
     
-    size_t Size() const { return size; }
-    T & operator()(size_t i) { return data[i]; }
-    const T & operator()(size_t i) const { return data[i]; }
+    size_t Rows() const { return rows; }
+    size_t Cols() const { return cols; }
+
+    // access operator
+    T & operator()(size_t i, size_t j) {
+      if constexpr (ORD == RowMajor)
+        return data[(i-1)*cols + (j-1)];
+      return data[(j-1)*rows + (i-1)];
+    }
+
+    // access operator (for const objects)
+    const T & operator()(size_t i, size_t j) const {
+      if constexpr (ORD == RowMajor)
+        return data[(i-1)*cols + (j-1)];
+      return data[(j-1)*rows + (i-1)];
+    }
   };
 
 
@@ -77,13 +112,15 @@ namespace ASC_bla
       }
   }
 
-  template <typename T>
-  std::ostream & operator<< (std::ostream & ost, const Vector<T> & v)
+  template <typename T, ORDERING ORD>
+  std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
   {
-    if (v.Size() > 0)
-      ost << v(0);
-    for (size_t i = 1; i < v.Size(); i++)
-      ost << ", " << v(i);
+    for (size_t i = 1; i <= A.Rows(); i++){
+      for (size_t j = 1; j <= A.Cols(); j++){
+        ost << A(i, j);
+        j == A.Cols() ? ost << std::endl : ost << ", ";
+      }
+    }
     return ost;
   }
   

@@ -1,3 +1,4 @@
+// prevent multiple inclusions of headerfile
 #ifndef FILE_VECTOR
 #define FILE_VECTOR
 
@@ -13,15 +14,18 @@ namespace ASC_bla
     T * data;
     
   public:
+    // constructor
     Vector (size_t _size) 
       : size(_size), data(new T[size]) { ; }
     
+    // copy constructor
     Vector (const Vector & v)
       : Vector(v.Size())
     {
       *this = v;
     }
 
+    // move constructor
     Vector (Vector && v)
       : size(0), data(nullptr)
     {
@@ -29,8 +33,10 @@ namespace ASC_bla
       std::swap(data, v.data);
     }
 
+    // destructor
     ~Vector () { delete [] data; }
     
+    // assignment operator (copy)
     Vector & operator=(const Vector & v2)
     {
       for (size_t i = 0; i < size; i++)
@@ -38,6 +44,7 @@ namespace ASC_bla
       return *this;
     }
 
+    // assignment operator (move)
     Vector & operator= (Vector && v2)
     {
       std::swap(size, v2.size);
@@ -46,7 +53,9 @@ namespace ASC_bla
     }
     
     size_t Size() const { return size; }
+    // access operator
     T & operator()(size_t i) { return data[i]; }
+    // access operator (for const objects)
     const T & operator()(size_t i) const { return data[i]; }
   };
 
@@ -73,8 +82,12 @@ namespace ASC_bla
   Vector<T> operator- (const Vector<T> & a)
   {
     Vector<T> diff(a.Size());
-    for (size_t i = 0; i < a.Size(); i++)
-      diff(i) = -a(i);
+    for (size_t i = 0; i < a.Size(); i++){
+      if (a(i) != 0)
+        diff(i) = -a(i);
+      else
+        diff(i) = a(i);
+    }
     return diff;
   }
 
