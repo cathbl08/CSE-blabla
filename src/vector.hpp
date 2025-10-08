@@ -59,6 +59,36 @@ namespace ASC_bla
       sum(i) = a(i)+b(i);
     return sum;
   }
+
+  template <typename T>
+  Vector<T> operator- (const Vector<T> & a, const Vector<T> & b)
+  {
+    Vector<T> diff(a.Size());
+    for (size_t i = 0; i < a.Size(); i++)
+      diff(i) = a(i)-b(i);
+    return diff;
+  }
+
+  template <typename T>
+  Vector<T> operator- (const Vector<T> & a)
+  {
+    Vector<T> diff(a.Size());
+    for (size_t i = 0; i < a.Size(); i++)
+      diff(i) = -a(i);
+    return diff;
+  }
+
+  template <typename T>
+  T operator* (const Vector<T> & a, const Vector<T> & b)
+  {
+    T mult=0;
+    for (size_t i = 0; i < a.Size(); i++) {
+      mult += a(i)*b(i);
+    }
+      
+
+    return mult;
+  }
   
   template <typename T>
   std::ostream & operator<< (std::ostream & ost, const Vector<T> & v)

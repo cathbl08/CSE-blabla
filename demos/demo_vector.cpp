@@ -16,7 +16,13 @@ int main()
       y(i) = 10;
     }
 
-  bla::Vector<double> z = x+y;
+  bla::Vector<double> z1 = x+y;
+  bla::Vector<double> z2 = x-y;
+  bla::Vector<double> z3 = -x;
+  double z4 = x*y;
   
-  std::cout << "x+y = " << z << std::endl;
+  std::cout << "x+y = " << z1 << std::endl;
+  std::cout << "x-y = " << z2 << std::endl;
+  std::cout << "-x = " << z3 << std::endl;
+  std::cout << "x*y = " << z4 << std::endl;
 }
