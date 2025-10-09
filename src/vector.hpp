@@ -35,7 +35,7 @@ namespace ASC_bla
 
     // destructor
     ~Vector () { delete [] data; }
-    
+
     // assignment operator (copy)
     Vector & operator=(const Vector & v2)
     {

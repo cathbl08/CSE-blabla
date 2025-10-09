@@ -5,12 +5,11 @@
 
 namespace bla = ASC_bla;
 
-
 int main()
 {
   size_t n = 5, m = 4;
   bla::Vector<double> x(n), y(n);
-  bla::Matrix<double> A(n,m), B(n,m), C(m,n);
+  bla::Matrix<double> A(n,m), B(n,m), C(n,n), D(n,m);
 
   for (size_t i = 0; i < x.Size(); i++)
     {
@@ -21,6 +20,12 @@ int main()
   for (size_t i = 1; i <= A.Rows(); i++){
     for (size_t j = 1; j <= A.Cols(); j++){
       A(i,j) = i*10 + j;
+    }
+  }
+
+  for (size_t i = 1; i <= C.Rows(); i++){
+    for (size_t j = 1; j <= C.Cols(); j++){
+      C(i,j) = 1;
     }
   }
 
@@ -49,4 +54,18 @@ int main()
   std::cout << "B(4,3) = " << B(4,3) << std::endl;
 
   std::cout << std::endl;
+
+  D = C*x;
+
+  std::cout << "---- Matrix D=C*x ----" << std::endl;
+  std::cout << D << std::endl;
+  std::cout << std::endl;
+
+  bla::Matrix<double> E(x);
+  std::cout << E << std::endl;
+
+  std::cout << "---- Matrix C*E ----" << std::endl;
+  std::cout << C*E << std::endl;
+  std::cout << std::endl;
+  
 }
