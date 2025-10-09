@@ -3,10 +3,16 @@
 #define FILE_VECTOR
 
 #include <iostream>
+#include <complex>
+
+template <typename TA, typename TB>
+// capture the result type of the addition of two vectors (this allows for addition/subtraction of complex and real vectors)
+using TRES = decltype(std::declval<TA>() + std::declval<TB>());
+// typedef decltype(std::declval<TA>()+std::declval<TB>()) TRES;
+// the above line was mentioned on the course's homepage, but did not work
 
 namespace ASC_bla
 {
-  
   template <typename T>
   class Vector
   {
@@ -59,20 +65,21 @@ namespace ASC_bla
     const T & operator()(size_t i) const { return data[i]; }
   };
 
-
-  template <typename T>
-  Vector<T> operator+ (const Vector<T> & a, const Vector<T> & b)
+  // vector addition - also handles addition of complex-complex or complex-real vectors
+  template <typename TA, typename TB>
+  Vector<TRES<TA,TB>> operator+ (const Vector<TA> & a, const Vector<TB> & b)
   {
-    Vector<T> sum(a.Size());
-    for (size_t i = 0; i < a.Size(); i++)
-      sum(i) = a(i)+b(i);
-    return sum;
+    Vector<TRES<TA,TB>> sum(a.Size());
+      for (size_t i = 0; i < a.Size(); i++)
+        sum(i) = a(i)+b(i);
+      return sum;
   }
 
-  template <typename T>
-  Vector<T> operator- (const Vector<T> & a, const Vector<T> & b)
+  // vector subtraction - also handles subtraction of complex-complex or complex-real vectors
+  template <typename TA, typename TB>
+  Vector<TRES<TA,TB>> operator- (const Vector<TA> & a, const Vector<TB> & b)
   {
-    Vector<T> diff(a.Size());
+    Vector<TRES<TA,TB>> diff(a.Size());
     for (size_t i = 0; i < a.Size(); i++)
       diff(i) = a(i)-b(i);
     return diff;
