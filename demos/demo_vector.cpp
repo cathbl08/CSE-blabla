@@ -17,14 +17,15 @@ int main()
       y(i) = 10;
     }
   
-  for (size_t i = 1; i <= A.Rows(); i++){
-    for (size_t j = 1; j <= A.Cols(); j++){
+  for (size_t i = 0; i < A.Rows(); i++){
+    for (size_t j = 0; j < A.Cols(); j++){
       A(i,j) = i*10 + j;
     }
   }
 
-  for (size_t i = 1; i <= C.Rows(); i++){
-    for (size_t j = 1; j <= C.Cols(); j++){
+  // init C
+  for (size_t i = 0; i < C.Rows(); i++){
+    for (size_t j = 0; j < C.Cols(); j++){
       C(i,j) = 1;
     }
   }
@@ -66,6 +67,6 @@ int main()
 
   std::cout << "---- Matrix C*E ----" << std::endl;
   std::cout << C*E << std::endl;
-  std::cout << std::endl;
-  
+  std::cout << std::endl;  
+
 }

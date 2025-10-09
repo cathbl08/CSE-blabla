@@ -53,16 +53,16 @@ namespace ASC_bla
     Matrix & operator=(const Matrix & A2)
     {
       if constexpr (ORD == RowMajor){
-        for (size_t i = 1; i <= A2.Rows(); i++){
-          for (size_t j = 1; j <= A2.Cols(); j++){
-            data[(i-1)*cols + (j-1)] = A2(i,j);
+        for (size_t i = 0; i < A2.Rows(); i++){
+          for (size_t j = 0; j < A2.Cols(); j++){
+            data[i*cols + j] = A2(i,j);
           }
         }
       }
       else{
-        for (size_t i = 1; i <= A2.Rows(); i++){
-          for (size_t j = 1; j <= A2.Cols(); j++){
-            data[(j-1)*rows + (i-1)] = A2(i,j);
+        for (size_t i = 0; i < A2.Rows(); i++){
+          for (size_t j = 0; j < A2.Cols(); j++){
+            data[j*rows + i] = A2(i,j);
           }
         }
       }
@@ -85,15 +85,15 @@ namespace ASC_bla
     // access operator
     T & operator()(size_t i, size_t j) {
       if constexpr (ORD == RowMajor)
-        return data[(i-1)*cols + (j-1)];
-      return data[(j-1)*rows + (i-1)];
+        return data[i*cols + j];
+      return data[j*rows + i];
     }
 
     // access operator (for const objects)
     const T & operator()(size_t i, size_t j) const {
       if constexpr (ORD == RowMajor)
-        return data[(i-1)*cols + (j-1)];
-      return data[(j-1)*rows + (i-1)];
+        return data[i*cols + j];
+      return data[j*rows + i];
     }
   };
 
@@ -116,10 +116,10 @@ namespace ASC_bla
       throw std::invalid_argument("Matrix multiplication is not defined.");
     else{
       Matrix<T, ORD> C(A.Rows(),B.Cols());
-      for (size_t i = 1; i <= A.Rows(); i++){
-        for (size_t j = 1; j <= B.Cols(); j++){
+      for (size_t i = 0; i < A.Rows(); i++){
+        for (size_t j = 0; j < B.Cols(); j++){
           T sum = T{};
-          for (size_t k = 1; k <= A.Cols(); k++)
+          for (size_t k = 0; k < A.Cols(); k++)
             sum += A(i,k)*B(k,j);
           C(i,j) = sum;
         }
@@ -140,10 +140,10 @@ namespace ASC_bla
   template <typename T, ORDERING ORD>
   std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
   {
-    for (size_t i = 1; i <= A.Rows(); i++){
-      for (size_t j = 1; j <= A.Cols(); j++){
+    for (size_t i = 0; i < A.Rows(); i++){
+      for (size_t j = 0; j < A.Cols(); j++){
         ost << A(i, j);
-        j == A.Cols() ? ost << std::endl : ost << ", ";
+        j == A.Cols()-1 ? ost << std::endl : ost << ", ";
       }
     }
     return ost;
