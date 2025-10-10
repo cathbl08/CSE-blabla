@@ -13,11 +13,11 @@ int main()
   bla::Matrix<double> A(n,m), B(n,m), C(n,n), D(n,m);
 
   // init vectors
-  for (size_t i = 0; i < x.Size(); i++){
-    x(i) = i;
-    y(i) = 10;
-    compl(i).real(i);
-    compl(i).imag(i*10);
+   for (size_t i = 0; i < x.Size(); i++){
+     x(i) = i;
+     y(i) = 10;
+     compl(i).real(i);
+     compl(i).imag(i*10);
   }
   
   // init A
@@ -58,6 +58,11 @@ int main()
   std::cout << "---- Matrix A ----" << std::endl;
   std::cout << A << std::endl;
   std::cout << "A(1,2) = " << A(1,2) << std::endl;
+
+  std::cout << std::endl;
+
+  std::cout << "---- Matrix A transpose ----" << std::endl;
+  std::cout << Transpose(A) << std::endl;
 
   std::cout << std::endl;
   

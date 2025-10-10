@@ -149,6 +149,17 @@ namespace ASC_bla
     return ost;
   }
   
+  // matrix transpose
+  template <typename T, ORDERING ORD>
+  Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
+  {
+    Matrix<T, ORD> transpose(A.Cols(),A.Rows());
+    for (size_t i = 0; i < A.Rows(); i++)
+      for (size_t j = 0; j < A.Cols(); j++)
+        transpose(j,i) = A(i,j);
+    return transpose;
+  }
+
 }
 
 #endif
