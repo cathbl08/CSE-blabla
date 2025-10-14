@@ -86,6 +86,18 @@ int main()
 
   std::cout << "---- Matrix C*E ----" << std::endl;
   std::cout << C*E << std::endl;
-  std::cout << std::endl;  
+  std::cout << std::endl; 
+  
+  std::cout << "---- Concetenated Matrix [A,B] ----" << std::endl;
+  std::cout << (A<B) << std::endl;
+  std::cout << std::endl;
+  
+  int i1 = 0, i2 = 1;
+
+  std::cout << "---- 1st & 2nd rows of [A,B] swapped ----" << std::endl;
+  std::cout << (A<B).swapRows(i1,i2) << std::endl;
+  std::cout << std::endl;
+
+  B = B.inv(A);
 
 }

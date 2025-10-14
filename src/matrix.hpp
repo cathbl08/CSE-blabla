@@ -19,7 +19,17 @@ namespace ASC_bla
   public:
     // constructor
     Matrix (size_t _row, size_t _col) 
-      : rows(_row), cols(_col), data(new T[_row * _col]) { ; }
+          : rows(_row), cols(_col), data(new T[_row * _col]) {
+        for (size_t i = 0; i < rows*cols; i++)
+          data[i] = 0;
+      }
+
+    // constructor for creating the identity matrix (to be adapted in case, e.g., the zero matrix is needed, etc.)
+    Matrix (size_t _dim)
+      : Matrix(_dim,_dim){
+      for (size_t i = 0; i <= _dim; i++)
+        data[(i-1)*_dim + (i-1)] = 1;
+    }
 
     // constructor for converting a Vector object to a Matrix object
     Matrix (const ASC_bla::Vector<T> & a)
@@ -49,6 +59,23 @@ namespace ASC_bla
     // destructor
     ~Matrix () { delete [] data; }
     
+
+    // row manipulation
+    Matrix & swapRows(const size_t i1, const size_t i2){
+      if constexpr (ORD == RowMajor){
+        for (size_t j = 0; j < cols; j++){
+            std::swap(data[i1*cols + j],data[i2*cols + j]);
+          }
+        }
+      else{
+        for (size_t j = 0; j < rows; j++){
+            std::swap(data[j*rows + i1],data[j*rows + i2]);
+          }
+      }
+      return *this;
+    }
+
+
     // assignment operator (copy)
     Matrix & operator=(const Matrix & A2)
     {
@@ -68,6 +95,34 @@ namespace ASC_bla
       }
 
       return *this;
+    }
+
+    // matrix inverse using Gauss-Jordan: [A,I] -> [I, A^-1]
+    Matrix & inv(const Matrix A){
+      
+      if (A.Rows() != A.Cols())
+        throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
+      else
+      {
+        Matrix<T, ORD> inverse(A.Cols()), T(A.Cols(), 2*A.Cols());
+        T = A<inverse;
+        // outer loop over all columns, assume A is "nice enough"
+        for (size_t j = 0; j < T.Cols(); j++){
+          for (size_t i = 0; i < T.Rows(); i++){
+
+            if (T(i,j) == 0)
+              continue; // will be swapRows and look for an entry that is != 0
+            else{
+              
+              for (size_t k = 0; k < T.Cols(); k++)
+                T(i,k) = T(i,k)/T(i,j);
+            }
+          }
+        }
+        // std::cout << T << std::endl;
+        return T; // for a start, atm this is too much, includes I
+      }
+
     }
 
     // assignment operator (move)
@@ -160,6 +215,21 @@ namespace ASC_bla
     return transpose;
   }
 
-}
+  // sideway concatenation
+  template <typename T, ORDERING ORD>
+  Matrix<T, ORD> operator< (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
+  {
+    Matrix<T, ORD> C(A.Rows(), A.Cols()+B.Cols());
+    for (size_t i = 0; i < C.Rows(); i++){
+      for (size_t j = 0; j < A.Cols(); j++){
+        C(i,j) = A(i,j);
+      }
+      for (size_t j = 0; j < B.Cols(); j++){
+        C(i,j + A.Cols()) = B(i,j);    
+      }
+    }
+    return C;
+  }
 
+}
 #endif

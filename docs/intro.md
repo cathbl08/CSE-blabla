@@ -6,7 +6,7 @@ The library provides template classes **Vector** and **Matrix**.
 The development of the library is performed by the group CSE-blabla thoughout the semester.
 
 Group members:
-- Andreas
+- Andreas Kickenweitz, 11771225
 - Catherine Bley, 12002266
 - Marcus Konrath, 01300688
 - Natalia Tylek, 12332258
