@@ -98,31 +98,59 @@ namespace ASC_bla
     }
 
     // matrix inverse using Gauss-Jordan: [A,I] -> [I, A^-1]
-    Matrix & inv(const Matrix A){
-      
-      if (A.Rows() != A.Cols())
+    Matrix inv() const {
+      if (rows != cols){
         throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
+      }
       else
       {
-        Matrix<T, ORD> inverse(A.Cols()), T(A.Cols(), 2*A.Cols());
-        T = A<inverse;
-        // outer loop over all columns, assume A is "nice enough"
-        for (size_t j = 0; j < T.Cols(); j++){
-          for (size_t i = 0; i < T.Rows(); i++){
-
-            if (T(i,j) == 0)
-              continue; // will be swapRows and look for an entry that is != 0
-            else{
-              
-              for (size_t k = 0; k < T.Cols(); k++)
-                T(i,k) = T(i,k)/T(i,j);
+        Matrix<T, ORD> inverse(cols), tab(rows, 2*cols); // initializes as identity matrix
+        tab = *this<inverse;
+        for (size_t i = 0; i < rows; i++){
+          int pivot = i;
+          while (pivot < rows && std::fabs(tab(pivot,i)) < 1e-9){
+            pivot++;
+          }
+          if (pivot == rows){
+            throw std::invalid_argument("Matrix is singular.");
+          }
+          
+          tab.swapRows(i,pivot);
+          T pivot_val = tab(i,i);
+          
+          // normalize pivot, row transformation
+          for (int j = i; j < tab.Cols(); j++) {
+            tab(i,j) /= pivot_val;
+          }
+          
+          // zeros below pivot
+          for (size_t k = i+1; k < rows; k++){
+            T factor = tab(k,i);
+            for (size_t j = i; j < tab.Cols(); j++){
+              tab(k,j) -= factor * tab(i,j);
             }
           }
         }
-        // std::cout << T << std::endl;
-        return T; // for a start, atm this is too much, includes I
+        
+        // zeros above pivot
+        for (int i = rows-1; i >= 0; i--){
+          for (int k = i - 1; k >= 0; k--){
+            T factor = tab(k,i);
+            for (size_t j = i; j < tab.Cols(); ++j){
+              tab(k,j) -= factor * tab(i,j);
+            }
+          }
+          
+        }
+        // std::cout << tab << std::endl; // DOES NOTHING
+        Matrix<T, ORD> res(cols,cols);
+        for (size_t i = 0; i < rows; i++){
+          for (size_t j = 0; j < rows; j++){
+            res(i,j) = tab(i,j+cols);
+            }
+          }
+        return res;
       }
-
     }
 
     // assignment operator (move)

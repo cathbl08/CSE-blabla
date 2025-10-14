@@ -2,6 +2,7 @@
 
 #include <vector.hpp>
 #include <matrix.hpp>
+#include <random>
 
 namespace bla = ASC_bla;
 
@@ -98,6 +99,30 @@ int main()
   std::cout << (A<B).swapRows(i1,i2) << std::endl;
   std::cout << std::endl;
 
-  B = B.inv(A);
+  //------------------------------------------------------------------------//
+
+  int dim = 3;
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> distrib1(1, 4), distrib2(1, 4);
+  bla::Matrix<double> mat(dim,dim), inv(dim,dim);
+  
+  for (size_t i = 0; i < dim; i++)
+    for (size_t j = 0; j < dim; j++)
+      mat(i,j) = distrib1(gen)+distrib2(gen);
+
+  std::cout << "---- inverse Matrix test ----" << std::endl;
+  std::cout << "mat = " << std::endl;
+  std::cout << mat << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "inverse(mat) = " << std::endl;
+  std::cout << mat.inv() << std::endl;
+  std::cout << std::endl;
+
+  std::cout << "---- mat*inv ?= I ---- " << std::endl;
+  std::cout << mat*mat.inv() << std::endl;
+  std::cout << std::endl;
+
 
 }
