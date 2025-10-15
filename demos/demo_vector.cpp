@@ -10,16 +10,16 @@ int main()
 {
   size_t n = 5, m = 4;
   bla::Vector<double> x(n), y(n);
-  bla::Vector<std::complex<double>> compl(n);
+  bla::Vector<std::complex<double>> comple(n);
   bla::Matrix<double> A(n,m), B(n,m), C(n,n), D(n,m);
 
   // init vectors
    for (size_t i = 0; i < x.Size(); i++){
      x(i) = i;
      y(i) = 10;
-     compl(i).real(i);
-     compl(i).imag(i*10);
-  }
+     comple(i).real(i);
+     comple(i).imag(i*10);
+  
   
   // init A
   for (size_t i = 0; i < A.Rows(); i++){
@@ -49,10 +49,10 @@ int main()
 
   std::cout << std::endl;
 
-  std::cout << "compl = " << compl << std::endl;
-  std::cout << "compl + x = " << compl+x << std::endl;
-  std::cout << "y - compl = " << y-compl << std::endl;
-  std::cout << "compl + compl = " << compl+compl << std::endl;
+  std::cout << "comple = " << comple << std::endl;
+  std::cout << "comple + x = " << comple+x << std::endl;
+  std::cout << "y - comple = " << y-comple << std::endl;
+  std::cout << "comple + comple = " << comple+comple << std::endl;
 
   std::cout << std::endl;
 

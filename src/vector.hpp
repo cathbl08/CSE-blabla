@@ -4,15 +4,13 @@
 
 #include <iostream>
 #include <complex>
+#include "vecexpr.hpp"
 
 template <typename TA, typename TB>
 // capture the result type of the addition of two vectors (this allows for addition/subtraction of complex and real vectors)
 using TRES = decltype(std::declval<TA>() + std::declval<TB>());
 // typedef decltype(std::declval<TA>()+std::declval<TB>()) TRES;
 // the above line was mentioned on the course's homepage, but did not work
-
-#include "vecexpr.hpp"
-
 
 namespace ASC_bla
 {
@@ -71,10 +69,6 @@ namespace ASC_bla
     }
       
   };
-  
-  
-
-  
   template <typename T>
   class Vector : public VectorView<T>
   {
@@ -179,6 +173,7 @@ namespace ASC_bla
     return mult;
   }
 */  
+
   template <typename T>
   std::ostream & operator<< (std::ostream & ost, const Vector<T> & v)
   {

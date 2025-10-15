@@ -4,25 +4,62 @@
 
 #include <iostream>
 #include <vector.hpp>
+#include "matexpr.hpp"
 
 namespace ASC_bla
 {
-  
   enum ORDERING { ColMajor, RowMajor };
-  template <typename T, ORDERING ORD=RowMajor>
-  class Matrix {
-  private:
-    size_t rows;
-    size_t cols;
-    T* data;
-    
+  template <typename T, typename ORD=RowMajor>
+  class MatrixView : public MatExpr<MatrixView<T,ORD>>
+  {
+  protected:
+    size_t m_rows, m_cols, m_dist;
+    T * m_data;  
   public:
-    // constructor
-    Matrix (size_t _row, size_t _col) 
-          : rows(_row), cols(_col), data(new T[_row * _col]) {
-        for (size_t i = 0; i < rows*cols; i++)
-          data[i] = 0;
+    MatrixView() = default;
+    MatrixView(const MatrixView &) = default;
+
+    template <typename T, typename ORD>
+    MatrixView (const MatrixView<T,ORD> & A)
+      : m_data(A.data()), m_rows(A.rows()), m_cols(A.cols()) { }
+    
+    MatrixView (size_t rows, size_t cols, T * data)
+      : m_data(data), m_rows(rows), m_cols(cols) { }
+    
+    // MatrixView (size_t size, TDIST dist, T * data)
+    //   : m_data(data), m_size(size), m_dist(dist) { }
+
+    template <typename TB>
+    MatrixView & operator= (const MatExpr<TB,ORD> & A)
+    {
+      assert ((m_rows = A.rows()) && (m_cols = A.cols()));
+      if constexpr (ORD == RowMajor){
+        for (size_t i = 0; i < m_rows; i++){
+          for (size_t j = 0; j < m_cols; j++){
+            data[i*m_cols + j] = A(i,j);
+          }
+        }
       }
+      else{
+        for (size_t i = 0; i < A2.Rows(); i++){
+          for (size_t j = 0; j < A2.Cols(); j++){
+            data[j*rows + i] = A2(i,j);
+          }
+        }
+      }
+      return *this;
+    }
+
+  class Matrix : public MatrixView<T,ORD>
+  {
+    typedef MatrixView<T,ORD> BASE;
+    using BASE::  
+  public:
+    // MatrixView (size_t _row, size_t _col) 
+    //       : rows(_row), cols(_col), data(new T[_row * _col]) {
+    //     for (size_t i = 0; i < rows*cols; i++)
+    //       data[i] = 0;
+    //   }
 
     // constructor for creating the identity matrix (to be adapted in case, e.g., the zero matrix is needed, etc.)
     Matrix (size_t _dim)
@@ -35,7 +72,7 @@ namespace ASC_bla
     Matrix (const ASC_bla::Vector<T> & a)
       : Matrix(a.Size(), 1)
     {
-      for (size_t i = 0; i < a.Size(); i++){
+      for (size_t i = 0; i < a.size(); i++){
         data[i] = a(i);
       }
     }

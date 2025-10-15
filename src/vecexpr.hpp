@@ -2,6 +2,7 @@
 #define FILE_EXPRESSION
 
 #include <cassert>
+#include <iostream>
 
 namespace ASC_bla
 {
