@@ -59,6 +59,28 @@ namespace ASC_bla
     return ScaleMatExpr(scal, m.derived());
   }
 
+  template <typename TA, typename TB>
+  class MultMatExpr : public MatExpr<MultMatExpr<TA,TB>>
+  {
+    TA A;
+    TB B;
+
+  public:
+    MultMatExpr(TA _A, TB _B) : A(_A), B(_B){}
+    auto operator() (size_t i, size_t j) const
+    {
+      using R = decltype (A(0,0) * B(0,0));
+      R multsum{};
+      for (size_t k = 0; k<A._cols(); k++)
+        multsum += A_(i,k) * B_(k,j);
+      return multsum;
+    
+    }
+
+    size_t rows() const { return A_.rows(); }
+    size_t cols() const { return B_.cols(); } 
+  };
+
   // **************** get i'th row of matrix *****************
  
   // template <typename TA, typename TB>
