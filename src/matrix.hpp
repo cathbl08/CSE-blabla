@@ -9,51 +9,75 @@
 namespace ASC_bla
 {
   enum ORDERING { ColMajor, RowMajor };
-  template <typename T, typename ORD=RowMajor>
-  class MatrixView : public MatExpr<MatrixView<T,ORD>>
+
+// starting with MatrixView class
+  template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
+  class MatrixView : public MatExpr<MatrixView<T,ORD, TDIST>>
   {
   protected:
     size_t m_rows, m_cols, m_dist;
     T * m_data;  
+
+    // implement ordering for MatrixView
+    constexpr size_t Index(std::size_t i, std::size_t j) const noexcept {
+  if constexpr (ORD == RowMajor) return i * m_dist + j;  
+  else return i + j * m_dist;   
+}
+
   public:
     MatrixView() = default;
     MatrixView(const MatrixView &) = default;
 
-    template <typename T, typename ORD>
-    MatrixView (const MatrixView<T,ORD> & A)
-      : m_data(A.data()), m_rows(A.rows()), m_cols(A.cols()) { }
+    // matrixview from another matrixview
+    template <typename TDIST2, ORDERING ORD2>
+    MatrixView (const MatrixView<T, ORD2, TDIST2> & A)
+      : m_data(A.data()), m_rows(A.rows()), m_cols(A.cols()), m_dist (ORD == RowMajor ? A.cols() : A.rows()) { }
     
+    // view for contiguous data
     MatrixView (size_t rows, size_t cols, T * data)
-      : m_data(data), m_rows(rows), m_cols(cols) { }
+      : m_data(data), m_rows(rows), m_cols(cols) { 
+        m_dist = (ORD == RowMajor) ? cols : rows;
+      }
     
-    // MatrixView (size_t size, TDIST dist, T * data)
-    //   : m_data(data), m_size(size), m_dist(dist) { }
 
+    // view for strided data
+    MatrixView (size_t rows, size_t cols,  size_t dist, T * data)
+      : m_data(data), m_rows(rows), m_cols(cols), m_dist(dist) { 
+      
+      }
+
+    // crtp 
+    size_t rows() const { return m_rows; }
+    size_t cols() const { return m_cols; }
+
+    // assignment operator but from MatExpr
     template <typename TB>
-    MatrixView & operator= (const MatExpr<TB,ORD> & A)
+    MatrixView & operator= (const MatExpr<TB> & A)
     {
-      assert ((m_rows = A.rows()) && (m_cols = A.cols()));
+      assert ((m_rows == A.rows()) && (m_cols == A.cols()));
       if constexpr (ORD == RowMajor){
-        for (size_t i = 0; i < m_rows; i++){
-          for (size_t j = 0; j < m_cols; j++){
-            data[i*m_cols + j] = A(i,j);
-          }
-        }
+        for (size_t i = 0; i < m_rows; i++)
+          for (size_t j = 0; j < m_cols; j++)
+            m_data[i * m_dist + j] = A(i,j);
+        
       }
       else{
-        for (size_t i = 0; i < A2.Rows(); i++){
-          for (size_t j = 0; j < A2.Cols(); j++){
-            data[j*rows + i] = A2(i,j);
-          }
-        }
+        for (size_t j = 0; j < m_cols; ++j)
+          for (size_t i = 0; i < m_rows; ++i)
+            m_data[i + j * m_dist] = A(i,j);
       }
       return *this;
     }
+  }; // end class MatrixView
 
+  template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
   class Matrix : public MatrixView<T,ORD>
   {
-    typedef MatrixView<T,ORD> BASE;
-    using BASE::  
+    // typedef MatrixView<T,ORD> BASE;
+    // using BASE:: 
+    using BASE = MatrixView<T,ORD>;
+    using BASE::m_rows; using BASE::m_cols; using BASE::m_dist; using BASE::m_data;
+
   public:
     // MatrixView (size_t _row, size_t _col) 
     //       : rows(_row), cols(_col), data(new T[_row * _col]) {
@@ -61,11 +85,19 @@ namespace ASC_bla
     //       data[i] = 0;
     //   }
 
+    Matrix (size_t rows, size_t cols) : BASE() {
+      m_rows = rows;
+      m_cols = cols;
+      m_dist = (ORD == RowMajor) ? cols : rows;
+      m_data = new T[rows*cols];
+      for (size_t i = 0; i < rows*cols; i++)
+        m_data[i] = T{};
+    }
+
     // constructor for creating the identity matrix (to be adapted in case, e.g., the zero matrix is needed, etc.)
     Matrix (size_t _dim)
       : Matrix(_dim,_dim){
-      for (size_t i = 0; i <= _dim; i++)
-        data[(i-1)*_dim + (i-1)] = 1;
+       for (size_t i = 0; i < _dim; ++i) (*this)(i,i) = T(1);
     }
 
     // constructor for converting a Vector object to a Matrix object
@@ -73,7 +105,7 @@ namespace ASC_bla
       : Matrix(a.Size(), 1)
     {
       for (size_t i = 0; i < a.size(); i++){
-        data[i] = a(i);
+        m_data[i] = a(i);
       }
     }
 
@@ -84,29 +116,36 @@ namespace ASC_bla
       *this = A;
     }
 
-    // move constructor
-    Matrix (Matrix && A)
-      : rows(0), cols(0), data(nullptr)
+    // move constructor changed
+    Matrix (Matrix && A) : BASE() {
+
+      m_rows = A.m_rows;
+      m_cols = A.m_cols;
+      m_dist = A.m_dist;
+      m_data = A.m_data;
+    
+    }
+      // : rows(0), cols(0), data(nullptr)
     {
-      std::swap(rows, A.rows);
-      std::swap(cols, A.cols);
-      std::swap(data, A.data);
+      std::swap(m_rows, A.m_rows);
+      std::swap(m_cols, A.m_cols);
+      std::swap(m_data, A.m_data);
     }
 
     // destructor
-    ~Matrix () { delete [] data; }
-    
+    ~Matrix () { delete [] m_data; }
+
 
     // row manipulation
     Matrix & swapRows(const size_t i1, const size_t i2){
       if constexpr (ORD == RowMajor){
-        for (size_t j = 0; j < cols; j++){
-            std::swap(data[i1*cols + j],data[i2*cols + j]);
+        for (size_t j = 0; j < m_cols; j++){
+            std::swap(m_data[i1*m_cols + j],m_data[i2*m_cols + j]);
           }
         }
       else{
-        for (size_t j = 0; j < rows; j++){
-            std::swap(data[j*rows + i1],data[j*rows + i2]);
+        for (size_t j = 0; j < m_rows; j++){
+            std::swap(m_data[j*m_rows + i1],m_data[j*m_rows + i2]);
           }
       }
       return *this;
@@ -117,16 +156,16 @@ namespace ASC_bla
     Matrix & operator=(const Matrix & A2)
     {
       if constexpr (ORD == RowMajor){
-        for (size_t i = 0; i < A2.Rows(); i++){
-          for (size_t j = 0; j < A2.Cols(); j++){
-            data[i*cols + j] = A2(i,j);
+        for (size_t i = 0; i < A2.rows(); i++){
+          for (size_t j = 0; j < A2.cols(); j++){
+            m_data[i*m_cols + j] = A2(i,j);
           }
         }
       }
       else{
-        for (size_t i = 0; i < A2.Rows(); i++){
-          for (size_t j = 0; j < A2.Cols(); j++){
-            data[j*rows + i] = A2(i,j);
+        for (size_t i = 0; i < A2.rows(); i++){
+          for (size_t j = 0; j < A2.cols(); j++){
+            m_data[j*m_rows + i] = A2(i,j);
           }
         }
       }
@@ -260,10 +299,10 @@ namespace ASC_bla
   template <typename T, ORDERING ORD>
   std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
   {
-    for (size_t i = 0; i < A.Rows(); i++){
-      for (size_t j = 0; j < A.Cols(); j++){
+    for (size_t i = 0; i < A.rows(); i++){
+      for (size_t j = 0; j < A.cols(); j++){
         ost << A(i, j);
-        j == A.Cols()-1 ? ost << std::endl : ost << ", ";
+        j == A.cols()-1 ? ost << std::endl : ost << ", ";
       }
     }
     return ost;
@@ -297,4 +336,5 @@ namespace ASC_bla
   }
 
 }
+
 #endif

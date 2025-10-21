@@ -4,6 +4,12 @@
 #include <cassert>
 #include <iostream>
 
+#include <type_traits>
+#include <utility>
+
+#include "matrix.hpp"
+#include "vecexpr.hpp"
+
 namespace ASC_bla
 {
   template <typename T>
@@ -25,10 +31,10 @@ namespace ASC_bla
     TA A;
     TB B;
   public:
-    SumVecExpr (TA _A, TB _B) : A(_A), B(_B) { }
+    SumMatExpr (TA _A, TB _B) : A(_A), B(_B) { }
     auto operator() (size_t i, size_t j) const { return A(i,j)+B(i,j); }
     size_t rows() const { return A.rows(); }
-    size_t cols() const { return B.cols(); }      
+    size_t cols() const { return A.cols(); }      
   };
   
   template <typename TA, typename TB>
@@ -53,10 +59,10 @@ namespace ASC_bla
     size_t cols() const { return mat.cols(); }      
   };
   
-  template <typename T>
-  auto operator* (double scal, const MatExpr<T> & m)
+  template <typename S, typename TM>
+  auto operator* (S scal, const MatExpr<TM> & m)
   {
-    return ScaleMatExpr(scal, m.derived());
+    return ScaleMatExpr<S, TM>(scal, m.derived());
   }
 
   template <typename TA, typename TB>
@@ -69,19 +75,60 @@ namespace ASC_bla
     MultMatExpr(TA _A, TB _B) : A(_A), B(_B){}
     auto operator() (size_t i, size_t j) const
     {
-      using R = decltype (A(0,0) * B(0,0));
-      R multsum{};
-      for (size_t k = 0; k<A._cols(); k++)
-        multsum += A_(i,k) * B_(k,j);
+      using elemtypeA = typename std::invoke_result<TA, size_t, size_t>::type;
+      using elemtypeB = typename std::invoke_result<TB, size_t, size_t>::type;
+      using TSUM = decltype(std::declval<elemtypeA>() * std::declval<elemtypeB>());
+
+      TSUM multsum{};                         
+      for (size_t k = 0; k < A.cols(); ++k)
+        multsum += A(i,k) * B(k,j);
       return multsum;
-    
     }
 
-    size_t rows() const { return A_.rows(); }
-    size_t cols() const { return B_.cols(); } 
+  
+    size_t rows() const { return A.rows(); }
+    size_t cols() const { return B.cols(); } 
   };
 
+  template <typename TA, typename TB>
+  auto operator* (const MatExpr<TA>& A, const MatExpr<TB>& B)
+  {
+    assert( A.cols() == B.rows() );
+    return MultMatExpr(A.derived(), B.derived());
+  }
+    
+  // **************** matvec -> vec  *****************
+
+
   // **************** get i'th row of matrix *****************
+  template <typename TM, typename TV>
+  class MultMatVecExpr : public VecExpr<MultMatVecExpr<TM,TV>>
+  {
+    TM A; 
+    TV x;
+
+  public:
+    MultMatVecExpr(TM _A, TV _x) : A(_A), x(_x) {}
+    size_t size() const { return A.rows(); }
+
+    auto operator()(size_t i) const {
+      using elemtypeA = typename std::invoke_result<TM, size_t, size_t>::type;
+      using elemtypeB = typename std::invoke_result<TV, size_t>::type;
+      using TSUM = decltype(std::declval<elemtypeA>() * std::declval<elemtypeB>());
+
+      TSUM sum{};
+      for (size_t k = 0; k < A.cols(); ++k)
+        sum += A(i,k) * x(k);
+      return sum;
+    }
+  };
+
+  template <typename TA, typename TV>
+  auto operator* (const MatExpr<TA>& A, const VecExpr<TV>& x)
+  {
+    assert( A.cols() == x.size() );
+    return MultMatVecExpr(A.derived(), x.derived());
+  }
  
   // template <typename TA, typename TB>
   // auto dot (const VecExpr<TA> & a, const VecExpr<TB> & b)

@@ -75,15 +75,15 @@ namespace ASC_bla
 
   // ***************** Output operator *****************
 
-  template <typename T>
-  std::ostream & operator<< (std::ostream & ost, const VecExpr<T> & v)
-  {
-    if (v.size() > 0)
-      ost << v(0);
-    for (size_t i = 1; i < v.size(); i++)
-      ost << ", " << v(i);
-    return ost;
-  }
+  // template <typename T>
+  // std::ostream & operator<< (std::ostream & ost, const VecExpr<T> & v)
+  // {
+  //   if (v.size() > 0)
+  //     ost << v(0);
+  //   for (size_t i = 1; i < v.size(); i++)
+  //     ost << ", " << v(i);
+  //   return ost;
+  // }
   
 }
  
