@@ -77,6 +77,7 @@ namespace ASC_bla
     // using BASE:: 
     using BASE = MatrixView<T,ORD>;
     using BASE::m_rows; using BASE::m_cols; using BASE::m_dist; using BASE::m_data;
+    using BASE::operator=; // bring in MatrixView assignment from expressions
 
   public:
     // MatrixView (size_t _row, size_t _col) 
@@ -118,18 +119,11 @@ namespace ASC_bla
 
     // move constructor changed
     Matrix (Matrix && A) : BASE() {
-
       m_rows = A.m_rows;
       m_cols = A.m_cols;
       m_dist = A.m_dist;
       m_data = A.m_data;
-    
-    }
-      // : rows(0), cols(0), data(nullptr)
-    {
-      std::swap(m_rows, A.m_rows);
-      std::swap(m_cols, A.m_cols);
-      std::swap(m_data, A.m_data);
+      A.m_rows = 0; A.m_cols = 0; A.m_dist = 0; A.m_data = nullptr;
     }
 
     // destructor
@@ -243,28 +237,30 @@ namespace ASC_bla
 
     Matrix & operator = (Matrix&& A2)
     {
-      if (this != &A2) return *this; // self-assignment check
-
+      if (this == &A2) return *this; // self-assignment check
       delete [] m_data; // free existing resource
       m_rows = A2.m_rows;
       m_cols = A2.m_cols;
       m_dist = A2.m_dist;
       m_data = A2.m_data;
+      A2.m_rows = 0; A2.m_cols = 0; A2.m_dist = 0; A2.m_data = nullptr;
       return *this;
     }
 
     // access operator
     T & operator()(size_t i, size_t j) {
       if constexpr (ORD == RowMajor)
-        return data[i*cols + j];
-      return data[j*rows + i];
+        return m_data[i*m_dist + j];
+      else
+        return m_data[i + j*m_dist];
     }
 
     // access operator (for const objects)
     const T & operator()(size_t i, size_t j) const {
       if constexpr (ORD == RowMajor)
-        return data[i*cols + j];
-      return data[j*rows + i];
+        return m_data[i*m_dist + j];
+      else
+        return m_data[i + j*m_dist];
     }
   };
 
@@ -272,9 +268,9 @@ namespace ASC_bla
   template <typename T, ORDERING ORD>
   Matrix<T, ORD> operator+ (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
   {
-    Matrix<T, ORD> sum(A.Rows(),A.Cols());
-    for (size_t i = 1; i <= A.Rows(); i++)
-      for (size_t j = 1; j <= A.Cols(); j++)
+    Matrix<T, ORD> sum(A.rows(),A.cols());
+    for (size_t i = 0; i < A.rows(); i++)
+      for (size_t j = 0; j < A.cols(); j++)
         sum(i,j) = A(i,j)+B(i,j);
     return sum;
   }

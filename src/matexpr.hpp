@@ -7,7 +7,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "matrix.hpp"
 #include "vecexpr.hpp"
 
 namespace ASC_bla
@@ -157,17 +156,7 @@ namespace ASC_bla
   //   return ost;
   // }
 
-  template <typename T, ORDERING ORD>
-  std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
-  {
-    for (size_t i = 0; i < A.rows(); i++){
-      for (size_t j = 0; j < A.cols(); j++){
-        ost << A(i,j);
-        j == A.cols() - 1 ? ost << std::endl : ost << ", ";
-      }
-    }
-    return ost;
-  }
+  // Note: Matrix stream operator<< is defined in matrix.hpp to avoid include cycles.
   
 }
  

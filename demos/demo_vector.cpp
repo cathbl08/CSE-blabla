@@ -22,40 +22,39 @@ int main()
      y(i) = 10;
      comple(i).real(i);
      comple(i).imag(i*10);
-  
+   }
   
   // init A
-  for (size_t i = 0; i < A.Rows(); i++){
-    for (size_t j = 0; j < A.Cols(); j++){
+  for (size_t i = 0; i < A.rows(); i++){
+    for (size_t j = 0; j < A.cols(); j++){
       A(i,j) = i*10 + j;
     }
-  }
 
   // init C
-  for (size_t i = 0; i < C.Rows(); i++){
-    for (size_t j = 0; j < C.Cols(); j++){
+  for (size_t i = 0; i < C.rows(); i++){
+    for (size_t j = 0; j < C.cols(); j++){
       C(i,j) = 1;
     }
   }
 
   bla::Vector<double> z1 = x+y;
-  bla::Vector<double> z2 = x-y;
-  bla::Vector<double> z3 = -x;
-  double z4 = x*y;
+  // bla::Vector<double> z2 = x-y;
+  // bla::Vector<double> z3 = -x;
+  // double z4 = x*y;
   
   std::cout << "x = " << x << std::endl;
   std::cout << "y = " << y << std::endl;
   std::cout << "x+y = " << z1 << std::endl;
-  std::cout << "x-y = " << z2 << std::endl;
-  std::cout << "-x = " << z3 << std::endl;
-  std::cout << "x*y = " << z4 << std::endl;
+  // std::cout << "x-y = " << z2 << std::endl;
+  // std::cout << "-x = " << z3 << std::endl;
+  // std::cout << "x*y = " << z4 << std::endl;
 
   std::cout << std::endl;
 
   std::cout << "comple = " << comple << std::endl;
-  std::cout << "comple + x = " << comple+x << std::endl;
-  std::cout << "y - comple = " << y-comple << std::endl;
-  std::cout << "comple + comple = " << comple+comple << std::endl;
+  // std::cout << "comple + x = " << comple+x << std::endl;
+  // std::cout << "y - comple = " << y-comple << std::endl;
+  // std::cout << "comple + comple = " << comple+comple << std::endl;
 
   std::cout << std::endl;
 
@@ -130,3 +129,4 @@ int main()
 
 }
 }
+

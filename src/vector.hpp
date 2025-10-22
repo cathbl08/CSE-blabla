@@ -120,11 +120,11 @@ namespace ASC_bla
       return *this;
     }
     
-    size_t Size() const { return size; }
-    // access operator
-    T & operator()(size_t i) { return data[i]; }
+    size_t Size() const { return m_size; }
+    // access operator (contiguous storage in Vector)
+    T & operator()(size_t i) { return m_data[i]; }
     // access operator (for const objects)
-    const T & operator()(size_t i) const { return data[i]; }
+    const T & operator()(size_t i) const { return m_data[i]; }
   };
 
   /*
