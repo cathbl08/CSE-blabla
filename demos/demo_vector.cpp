@@ -2,6 +2,9 @@
 
 #include <vector.hpp>
 #include <matrix.hpp>
+
+#include "vecexpr.hpp"
+#include "matexpr.hpp"
 #include <random>
 
 namespace bla = ASC_bla;
@@ -62,8 +65,8 @@ int main()
 
   std::cout << std::endl;
 
-  std::cout << "---- Matrix A transpose ----" << std::endl;
-  std::cout << Transpose(A) << std::endl;
+  // std::cout << "---- Matrix A transpose ----" << std::endl;
+  // std::cout << Transpose(A) << std::endl;
 
   std::cout << std::endl;
   
@@ -89,15 +92,15 @@ int main()
   std::cout << C*E << std::endl;
   std::cout << std::endl; 
   
-  std::cout << "---- Concetenated Matrix [A,B] ----" << std::endl;
-  std::cout << (A<B) << std::endl;
-  std::cout << std::endl;
+  // std::cout << "---- Concetenated Matrix [A,B] ----" << std::endl;
+  // std::cout << (A<B) << std::endl;
+  // std::cout << std::endl;
   
-  int i1 = 0, i2 = 1;
+  // int i1 = 0, i2 = 1;
 
-  std::cout << "---- 1st & 2nd rows of [A,B] swapped ----" << std::endl;
-  std::cout << (A<B).swapRows(i1,i2) << std::endl;
-  std::cout << std::endl;
+  // std::cout << "---- 1st & 2nd rows of [A,B] swapped ----" << std::endl;
+  // std::cout << (A<B).swapRows(i1,i2) << std::endl;
+  // std::cout << std::endl;
 
   //------------------------------------------------------------------------//
 
@@ -111,18 +114,19 @@ int main()
     for (size_t j = 0; j < dim; j++)
       mat(i,j) = distrib1(gen)+distrib2(gen);
 
-  std::cout << "---- inverse Matrix test ----" << std::endl;
-  std::cout << "mat = " << std::endl;
-  std::cout << mat << std::endl;
-  std::cout << std::endl;
+  // std::cout << "---- inverse Matrix test ----" << std::endl;
+  // std::cout << "mat = " << std::endl;
+  // std::cout << mat << std::endl;
+  // std::cout << std::endl;
 
-  std::cout << "inverse(mat) = " << std::endl;
-  std::cout << mat.inv() << std::endl;
-  std::cout << std::endl;
+  // std::cout << "inverse(mat) = " << std::endl;
+  // std::cout << mat.inv() << std::endl;
+  // std::cout << std::endl;
 
-  std::cout << "---- mat*inv ?= I ---- " << std::endl;
-  std::cout << mat*mat.inv() << std::endl;
-  std::cout << std::endl;
+  // std::cout << "---- mat*inv ?= I ---- " << std::endl;
+  // std::cout << mat*mat.inv() << std::endl;
+  // std::cout << std::endl;
 
 
+}
 }

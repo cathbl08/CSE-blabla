@@ -174,9 +174,10 @@ namespace ASC_bla
   }
 */  
 
-  template <typename T>
-  std::ostream & operator<< (std::ostream & ost, const Vector<T> & v)
+  template <typename E>
+  std::ostream & operator<< (std::ostream & ost, const Vector<E> & vexpr)
   {
+    const auto & v = vexpr.derived();
     if (v.size() > 0)
       ost << v(0);
     for (size_t i = 1; i < v.size(); i++)

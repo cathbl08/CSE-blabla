@@ -111,7 +111,7 @@ namespace ASC_bla
 
     // copy constructor
     Matrix (const Matrix & A)
-      : Matrix(A.Rows(), A.Cols())
+      : Matrix(A.rows(), A.cols())
     {
       *this = A;
     }
@@ -174,72 +174,84 @@ namespace ASC_bla
     }
 
     // matrix inverse using Gauss-Jordan: [A,I] -> [I, A^-1]
-    Matrix inv() const {
-      if (rows != cols){
-        throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
-      }
-      else
-      {
-        Matrix<T, ORD> inverse(cols), tab(rows, 2*cols); // initializes as identity matrix
-        tab = *this<inverse;
-        for (size_t i = 0; i < rows; i++){
-          int pivot = i;
-          while (pivot < rows && std::fabs(tab(pivot,i)) < 1e-9){
-            pivot++;
-          }
-          if (pivot == rows){
-            throw std::invalid_argument("Matrix is singular.");
-          }
+    // Matrix inv() const {
+    //   if (rows != cols){
+    //     throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
+    //   }
+    //   else
+    //   {
+    //     Matrix<T, ORD> inverse(cols), tab(rows, 2*cols); // initializes as identity matrix
+    //     tab = *this<inverse;
+    //     for (size_t i = 0; i < rows; i++){
+    //       int pivot = i;
+    //       while (pivot < rows && std::fabs(tab(pivot,i)) < 1e-9){
+    //         pivot++;
+    //       }
+    //       if (pivot == rows){
+    //         throw std::invalid_argument("Matrix is singular.");
+    //       }
           
-          tab.swapRows(i,pivot);
-          T pivot_val = tab(i,i);
+    //       tab.swapRows(i,pivot);
+    //       T pivot_val = tab(i,i);
           
-          // normalize pivot, row transformation
-          for (int j = i; j < tab.Cols(); j++) {
-            tab(i,j) /= pivot_val;
-          }
+    //       // normalize pivot, row transformation
+    //       for (int j = i; j < tab.Cols(); j++) {
+    //         tab(i,j) /= pivot_val;
+    //       }
           
-          // zeros below pivot
-          for (size_t k = i+1; k < rows; k++){
-            T factor = tab(k,i);
-            for (size_t j = i; j < tab.Cols(); j++){
-              tab(k,j) -= factor * tab(i,j);
-            }
-          }
-        }
+    //       // zeros below pivot
+    //       for (size_t k = i+1; k < rows; k++){
+    //         T factor = tab(k,i);
+    //         for (size_t j = i; j < tab.Cols(); j++){
+    //           tab(k,j) -= factor * tab(i,j);
+    //         }
+    //       }
+    //     }
         
-        // zeros above pivot
-        for (int i = rows-1; i >= 0; i--){
-          for (int k = i - 1; k >= 0; k--){
-            T factor = tab(k,i);
-            for (size_t j = i; j < tab.Cols(); ++j){
-              tab(k,j) -= factor * tab(i,j);
-            }
-          }
+    //     // zeros above pivot
+    //     for (int i = rows-1; i >= 0; i--){
+    //       for (int k = i - 1; k >= 0; k--){
+    //         T factor = tab(k,i);
+    //         for (size_t j = i; j < tab.Cols(); ++j){
+    //           tab(k,j) -= factor * tab(i,j);
+    //         }
+    //       }
           
-        }
-        // std::cout << tab << std::endl; // DOES NOTHING
-        Matrix<T, ORD> res(cols,cols);
-        for (size_t i = 0; i < rows; i++){
-          for (size_t j = 0; j < rows; j++){
-            res(i,j) = tab(i,j+cols);
-            }
-          }
-        return res;
-      }
-    }
+    //     }
+    //     // std::cout << tab << std::endl; // DOES NOTHING
+    //     Matrix<T, ORD> res(cols,cols);
+    //     for (size_t i = 0; i < rows; i++){
+    //       for (size_t j = 0; j < rows; j++){
+    //         res(i,j) = tab(i,j+cols);
+    //         }
+    //       }
+    //     return res;
+    //   }
+    // }
 
     // assignment operator (move)
-    Matrix & operator= (Matrix && A2)
+    // Matrix & operator= (Matrix && A2)
+    // {
+    //   std::swap(m_rows, A2.rows);
+    //   std::swap(m_cols, A2.cols);
+    //   std::swap(m_data, A2.data);
+    //   return *this;
+    // }
+    
+    // size_t Rows() const { return rows; }
+    // size_t Cols() const { return cols; }
+
+    Matrix & operator = (Matrix&& A2)
     {
-      std::swap(rows, A2.rows);
-      std::swap(cols, A2.cols);
-      std::swap(data, A2.data);
+      if (this != &A2) return *this; // self-assignment check
+
+      delete [] m_data; // free existing resource
+      m_rows = A2.m_rows;
+      m_cols = A2.m_cols;
+      m_dist = A2.m_dist;
+      m_data = A2.m_data;
       return *this;
     }
-    
-    size_t Rows() const { return rows; }
-    size_t Cols() const { return cols; }
 
     // access operator
     T & operator()(size_t i, size_t j) {
@@ -271,14 +283,14 @@ namespace ASC_bla
   template <typename T, ORDERING ORD>
   Matrix<T, ORD> operator* (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
   { 
-    if (A.Cols() != B.Rows())
+    if (A.cols() != B.rows())
       throw std::invalid_argument("Matrix multiplication is not defined.");
     else{
-      Matrix<T, ORD> C(A.Rows(),B.Cols());
-      for (size_t i = 0; i < A.Rows(); i++){
-        for (size_t j = 0; j < B.Cols(); j++){
+      Matrix<T, ORD> C(A.rows(),B.cols());
+      for (size_t i = 0; i < A.rows(); i++){
+        for (size_t j = 0; j < B.cols(); j++){
           T sum = T{};
-          for (size_t k = 0; k < A.Cols(); k++)
+          for (size_t k = 0; k < A.cols(); k++)
             sum += A(i,k)*B(k,j);
           C(i,j) = sum;
         }
@@ -308,32 +320,32 @@ namespace ASC_bla
     return ost;
   }
   
-  // matrix transpose
-  template <typename T, ORDERING ORD>
-  Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
-  {
-    Matrix<T, ORD> transpose(A.Cols(),A.Rows());
-    for (size_t i = 0; i < A.Rows(); i++)
-      for (size_t j = 0; j < A.Cols(); j++)
-        transpose(j,i) = A(i,j);
-    return transpose;
-  }
+  // // matrix transpose
+  // template <typename T, ORDERING ORD>
+  // Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
+  // {
+  //   Matrix<T, ORD> transpose(A.Cols(),A.Rows());
+  //   for (size_t i = 0; i < A.Rows(); i++)
+  //     for (size_t j = 0; j < A.Cols(); j++)
+  //       transpose(j,i) = A(i,j);
+  //   return transpose;
+  // }
 
-  // sideway concatenation
-  template <typename T, ORDERING ORD>
-  Matrix<T, ORD> operator< (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
-  {
-    Matrix<T, ORD> C(A.Rows(), A.Cols()+B.Cols());
-    for (size_t i = 0; i < C.Rows(); i++){
-      for (size_t j = 0; j < A.Cols(); j++){
-        C(i,j) = A(i,j);
-      }
-      for (size_t j = 0; j < B.Cols(); j++){
-        C(i,j + A.Cols()) = B(i,j);    
-      }
-    }
-    return C;
-  }
+  // // sideway concatenation
+  // template <typename T, ORDERING ORD>
+  // Matrix<T, ORD> operator< (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
+  // {
+  //   Matrix<T, ORD> C(A.Rows(), A.Cols()+B.Cols());
+  //   for (size_t i = 0; i < C.Rows(); i++){
+  //     for (size_t j = 0; j < A.Cols(); j++){
+  //       C(i,j) = A(i,j);
+  //     }
+  //     for (size_t j = 0; j < B.Cols(); j++){
+  //       C(i,j + A.Cols()) = B(i,j);    
+  //     }
+  //   }
+  //   return C;
+  // }
 
 }
 
