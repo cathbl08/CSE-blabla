@@ -1,3 +1,6 @@
 build
 _build
 
+# from python package
+_skbuild
+ASCsoft.egg-info
