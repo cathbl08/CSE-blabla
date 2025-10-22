@@ -5,6 +5,7 @@
 
 # import from the installed ASCsoft package:
 from ASCsoft.bla import Vector
+from ASCsoft.bla import Matrix
 
 x = Vector(3)
 y = Vector(3)
@@ -28,5 +29,17 @@ print (x)
 x[0:10:2] = 3
 print (x)
 
+a = Matrix(2,3)
+b = Matrix(2,3)
 
+for i in range(2):
+    for j in range(3):
+        a[i,j] = i+j
+        b[i,j] = 10*(i+j)
+
+print ("a =", a)
+print ("b =", b)
+print ("a + b =", a + b)
+
+print ("3* a =", 3*a)
 
