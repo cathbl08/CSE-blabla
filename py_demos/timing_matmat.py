@@ -1,5 +1,7 @@
-from ngsolve import *
+from ASCsoft.bla import *
 from time import time
+
+# measure our matrix multiplication time
 
 n = 1
 

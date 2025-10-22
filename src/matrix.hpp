@@ -6,6 +6,8 @@
 #include <vector.hpp>
 #include "matexpr.hpp"
 
+
+// we need a matrix from matrix expression that call matrix view for that we need a constructor 
 namespace ASC_bla
 {
   enum ORDERING { ColMajor, RowMajor };
@@ -100,7 +102,7 @@ namespace ASC_bla
       : Matrix(_dim,_dim){
        for (size_t i = 0; i < _dim; ++i) (*this)(i,i) = T(1);
     }
-
+ 
     // constructor for converting a Vector object to a Matrix object
     Matrix (const ASC_bla::Vector<T> & a)
       : Matrix(a.Size(), 1)

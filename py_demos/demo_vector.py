@@ -41,5 +41,17 @@ print ("a =", a)
 print ("b =", b)
 print ("a + b =", a + b)
 
-print ("3* a =", 3*a)
+
+# both not working yet 
+# print ("3* a =", 3*a) 
+
+# this we dont have implemented yet
+# print ("a[:,1] =", a[:,1]) 
+
+a[1,1]= 3
+print (a[1,1])
+
+print (a[0,0])
+
+print(a)
 

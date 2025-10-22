@@ -12,7 +12,7 @@ print ("x+y =",x+y)
 v = Vector(3)
 v[:] = 7
 
-import pickle
+import pickle 
 f = open("file.txt", 'wb')
 pickle.dump([2,"hello", v], f)
 del f
