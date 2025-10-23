@@ -1,4 +1,6 @@
 from ASCsoft.bla import *
+# import numpy as np 
+
 from time import time
 
 # measure our matrix multiplication time

@@ -30,6 +30,17 @@ namespace ASC_bla
     MatrixView() = default;
     MatrixView(const MatrixView &) = default;
 
+    T& operator()(size_t i, size_t j) {
+    return m_data[Index(i,j)];
+    }
+    const T& operator()(size_t i, size_t j) const {
+      return m_data[Index(i,j)];
+    }
+
+    T*       data()       { return m_data; }
+    const T* data() const { return m_data; }
+
+
     // matrixview from another matrixview
     template <typename TDIST2, ORDERING ORD2>
     MatrixView (const MatrixView<T, ORD2, TDIST2> & A)
@@ -73,11 +84,11 @@ namespace ASC_bla
   }; // end class MatrixView
 
   template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
-  class Matrix : public MatrixView<T,ORD>
+  class Matrix : public MatrixView<T,ORD, TDIST>
   {
     // typedef MatrixView<T,ORD> BASE;
     // using BASE:: 
-    using BASE = MatrixView<T,ORD>;
+    using BASE = MatrixView<T,ORD, TDIST>;
     using BASE::m_rows; using BASE::m_cols; using BASE::m_dist; using BASE::m_data;
     using BASE::operator=; // bring in MatrixView assignment from expressions
 
@@ -97,6 +108,13 @@ namespace ASC_bla
         m_data[i] = T{};
     }
 
+    template <typename TB>
+    Matrix(const MatExpr<TB>& A)
+      : Matrix(A.rows(), A.cols())  
+    {
+      BASE::operator=(A);          
+    }
+
     // constructor for creating the identity matrix (to be adapted in case, e.g., the zero matrix is needed, etc.)
     Matrix (size_t _dim)
       : Matrix(_dim,_dim){
@@ -105,7 +123,7 @@ namespace ASC_bla
  
     // constructor for converting a Vector object to a Matrix object
     Matrix (const ASC_bla::Vector<T> & a)
-      : Matrix(a.Size(), 1)
+      : Matrix(a.size(), 1)
     {
       for (size_t i = 0; i < a.size(); i++){
         m_data[i] = a(i);
@@ -133,39 +151,23 @@ namespace ASC_bla
 
 
     // row manipulation
-    Matrix & swapRows(const size_t i1, const size_t i2){
-      if constexpr (ORD == RowMajor){
-        for (size_t j = 0; j < m_cols; j++){
-            std::swap(m_data[i1*m_cols + j],m_data[i2*m_cols + j]);
-          }
-        }
-      else{
-        for (size_t j = 0; j < m_rows; j++){
-            std::swap(m_data[j*m_rows + i1],m_data[j*m_rows + i2]);
-          }
+    Matrix& swapRows(size_t i1, size_t i2) {
+      if constexpr (ORD == RowMajor) {
+        for (size_t j = 0; j < m_cols; ++j)
+          std::swap(m_data[this->Index(i1,j)], m_data[this->Index(i2,j)]);
+      } else {
+        for (size_t j = 0; j < m_cols; ++j)
+          std::swap(m_data[this->Index(i1,j)], m_data[this->Index(i2,j)]);
       }
       return *this;
     }
 
-
-    // assignment operator (copy)
-    Matrix & operator=(const Matrix & A2)
-    {
-      if constexpr (ORD == RowMajor){
-        for (size_t i = 0; i < A2.rows(); i++){
-          for (size_t j = 0; j < A2.cols(); j++){
-            m_data[i*m_cols + j] = A2(i,j);
-          }
-        }
-      }
-      else{
-        for (size_t i = 0; i < A2.rows(); i++){
-          for (size_t j = 0; j < A2.cols(); j++){
-            m_data[j*m_rows + i] = A2(i,j);
-          }
-        }
-      }
-
+    // copy-assign
+    Matrix& operator=(const Matrix& A2) {
+      assert(m_rows == A2.rows() && m_cols == A2.cols());
+      for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols; ++j)
+          m_data[this->Index(i,j)] = A2(i,j);
       return *this;
     }
 
@@ -249,21 +251,21 @@ namespace ASC_bla
       return *this;
     }
 
-    // access operator
-    T & operator()(size_t i, size_t j) {
-      if constexpr (ORD == RowMajor)
-        return m_data[i*m_dist + j];
-      else
-        return m_data[i + j*m_dist];
-    }
+    // // access operator
+    // T & operator()(size_t i, size_t j) {
+    //   if constexpr (ORD == RowMajor)
+    //     return m_data[i*m_dist + j];
+    //   else
+    //     return m_data[i + j*m_dist];
+    // }
 
-    // access operator (for const objects)
-    const T & operator()(size_t i, size_t j) const {
-      if constexpr (ORD == RowMajor)
-        return m_data[i*m_dist + j];
-      else
-        return m_data[i + j*m_dist];
-    }
+    // // access operator (for const objects)
+    // const T & operator()(size_t i, size_t j) const {
+    //   if constexpr (ORD == RowMajor)
+    //     return m_data[i*m_dist + j];
+    //   else
+    //     return m_data[i + j*m_dist];
+    // }
   };
 
   // matrix-matrix addition

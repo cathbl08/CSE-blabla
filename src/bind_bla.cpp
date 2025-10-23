@@ -1,5 +1,6 @@
 #include <sstream>
 #include <pybind11/pybind11.h>
+#include <cstring>
 
 #include "vector.hpp"
 #include "matrix.hpp"
@@ -125,10 +126,21 @@ PYBIND11_MODULE(bla, m) {
       //this doesnt work / make sense
       .def("__rmul__", [](Matrix<double> & self, double scal)
       { return Matrix<double, RowMajor> (scal * self); })
+
+      .def("__mul__", [](Matrix<double> & self, double scal)
+      { return Matrix<double, RowMajor> (scal * self); })
     
       // .def("__mul__", [](Matrix<double> & self, double scal)
       // { return ScaleMatExpr<double, MatrixView<double>> (scal*self); })
 
+
+      .def("__mul__", [](const Matrix<double>& A, const Matrix<double>& B) {
+            return A * B;  
+        })
+
+      .def("__matmul__", [](const Matrix<double>& A, const Matrix<double>& B) {
+            return A * B;
+        })
       
       .def("__str__", [](const Matrix<double> & self)
       {
