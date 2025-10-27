@@ -4,6 +4,12 @@ project(ASC_bla)
 # C++17 required for constexpr if
 set (CMAKE_CXX_STANDARD 17)
 
+# Set default CMAKE\_BUILD\_TYPE to RelWithDebInfo if not specified
+if(NOT CMAKE\_BUILD\_TYPE)
+  set(CMAKE\_BUILD\_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build." FORCE)
+endif()
+
+
 include_directories(src)
 
 
