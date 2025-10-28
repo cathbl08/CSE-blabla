@@ -13,7 +13,7 @@ int main()
   bla::Vector<std::complex<double>> comple(n);
 
   // init vectors
-  for (size_t i = 0; i < x.Size(); i++)
+  for (size_t i = 0; i < x.size(); i++)
   {
     x(i) = i;
     y(i) = 10;

@@ -46,13 +46,13 @@ namespace ASC_bla
 
 // ***************** Scaling a matrix *****************
   
-  template <typename TSCAL, typename TV>
-  class ScaleMatExpr : public MatExpr<ScaleMatExpr<TSCAL,TV>>
+  template <typename TSCAL, typename TM>
+  class ScaleMatExpr : public MatExpr<ScaleMatExpr<TSCAL,TM>>
   {
     TSCAL scal;
-    TV mat;
+    TM mat;
   public:
-    ScaleMatExpr (TSCAL _scal, TV _mat) : scal(_scal), mat(_mat) { }
+    ScaleMatExpr (TSCAL _scal, TM _mat) : scal(_scal), mat(_mat) { }
     auto operator() (size_t i, size_t j) const { return scal*mat(i,j); }
     size_t rows() const { return mat.rows(); }
     size_t cols() const { return mat.cols(); }      
@@ -63,6 +63,9 @@ namespace ASC_bla
   {
     return ScaleMatExpr<S, TM>(scal, m.derived());
   }
+
+
+  // ***************** Product of two matrices *****************
 
   template <typename TA, typename TB>
   class MultMatExpr : public MatExpr<MultMatExpr<TA,TB>>
@@ -96,10 +99,9 @@ namespace ASC_bla
     return MultMatExpr(A.derived(), B.derived());
   }
     
-  // **************** matvec -> vec  *****************
 
+  // **************** Product of matrix and vector  *****************
 
-  // **************** get i'th row of matrix *****************
   template <typename TM, typename TV>
   class MultMatVecExpr : public VecExpr<MultMatVecExpr<TM,TV>>
   {
@@ -128,21 +130,6 @@ namespace ASC_bla
     assert( A.cols() == x.size() );
     return MultMatVecExpr(A.derived(), x.derived());
   }
- 
-  // template <typename TA, typename TB>
-  // auto dot (const VecExpr<TA> & a, const VecExpr<TB> & b)
-  // {
-  //   assert (a.size() == b.size());
-
-  //   using elemtypeA = typename std::invoke_result<TA,size_t>::type;
-  //   using elemtypeB = typename std::invoke_result<TB,size_t>::type;
-  //   using TSUM = decltype(std::declval<elemtypeA>()*std::declval<elemtypeB>());
-
-  //   TSUM sum = 0;
-  //   for (size_t i = 0; i < a.size(); i++)
-  //     sum += a(i)*b(i);
-  //   return sum;
-  // }
 
   // ***************** Output operator *****************
 

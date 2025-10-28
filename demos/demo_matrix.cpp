@@ -10,10 +10,11 @@ int main()
 {
     size_t n = 5, m = 4;
     bla::Vector<double> x(n), y(n);
+    // TODO test with ColumnMajor storage as well
     bla::Matrix<double> A(n, m), B(n, m), C(n, n), D(n, m);
 
     // init vector
-    for (size_t i = 0; i < x.Size(); i++)
+    for (size_t i = 0; i < x.size(); i++)
         x(i) = i;
 
     // init A
@@ -32,12 +33,25 @@ int main()
     std::cout << "---- Matrix A ----" << std::endl;
     std::cout << A << std::endl;
     std::cout << "A(1,2) = " << A(1, 2) << std::endl;
-
     std::cout << std::endl;
 
-    // std::cout << "---- Matrix A transpose ----" << std::endl;
-    // std::cout << Transpose(A) << std::endl;
+    std::cout << "---- A.row(2) ----" << std::endl;
+    std::cout << A.row(2) << std::endl;
+    std::cout << "---- A.col(1) ----" << std::endl;
+    std::cout << A.col(1) << std::endl;
+    std::cout << std::endl;
 
+    bla::Matrix<double, ASC_bla::ColMajor> AA(A);
+    std::cout << "---- Matrix AA (Column Major from A) ----" << std::endl;
+    std::cout << AA << std::endl;
+    std::cout << "---- AA.row(2) ----" << std::endl;
+    std::cout << AA.row(2) << std::endl;
+    std::cout << "---- AA.col(1) ----" << std::endl;
+    std::cout << AA.col(1) << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "---- Matrix A transpose ----" << std::endl;
+    std::cout << Transpose(A) << std::endl;
     std::cout << std::endl;
 
     B = A;
@@ -45,7 +59,6 @@ int main()
     std::cout << "---- Matrix B ----" << std::endl;
     std::cout << B << std::endl;
     std::cout << "B(4,3) = " << B(4, 3) << std::endl;
-
     std::cout << std::endl;
 
     D = C * x;
@@ -62,15 +75,15 @@ int main()
     std::cout << C * E << std::endl;
     std::cout << std::endl;
 
-    // std::cout << "---- Concetenated Matrix [A,B] ----" << std::endl;
-    // std::cout << (A<B) << std::endl;
-    // std::cout << std::endl;
+    std::cout << "---- Concetenated Matrix [A,B] ----" << std::endl;
+    std::cout << (A < B) << std::endl;
+    std::cout << std::endl;
 
-    // int i1 = 0, i2 = 1;
+    int i1 = 0, i2 = 1;
 
-    // std::cout << "---- 1st & 2nd rows of [A,B] swapped ----" << std::endl;
-    // std::cout << (A<B).swapRows(i1,i2) << std::endl;
-    // std::cout << std::endl;
+    std::cout << "---- 1st & 2nd rows of [A,B] swapped ----" << std::endl;
+    std::cout << (A < B).swapRows(i1, i2) << std::endl;
+    std::cout << std::endl;
 
     //------------------------------------------------------------------------//
 
@@ -84,16 +97,16 @@ int main()
         for (size_t j = 0; j < dim; j++)
             mat(i, j) = distrib1(gen) + distrib2(gen);
 
-    // std::cout << "---- inverse Matrix test ----" << std::endl;
-    // std::cout << "mat = " << std::endl;
-    // std::cout << mat << std::endl;
-    // std::cout << std::endl;
+    std::cout << "---- inverse Matrix test ----" << std::endl;
+    std::cout << "mat = " << std::endl;
+    std::cout << mat << std::endl;
+    std::cout << std::endl;
 
-    // std::cout << "inverse(mat) = " << std::endl;
-    // std::cout << mat.inv() << std::endl;
-    // std::cout << std::endl;
+    std::cout << "inverse(mat) = " << std::endl;
+    std::cout << mat.inv() << std::endl;
+    std::cout << std::endl;
 
-    // std::cout << "---- mat*inv ?= I ---- " << std::endl;
-    // std::cout << mat*mat.inv() << std::endl;
-    // std::cout << std::endl;
+    std::cout << "---- mat*inv ?= I ---- " << std::endl;
+    std::cout << mat * mat.inv() << std::endl;
+    std::cout << std::endl;
 }

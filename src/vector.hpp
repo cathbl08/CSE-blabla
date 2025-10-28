@@ -28,7 +28,13 @@ namespace ASC_bla
     
     template <typename TDIST2>
     VectorView (const VectorView<T,TDIST2> & v2)
-      : m_data(v2.data()), m_size(v2.Size()), m_dist(v2.dist()) { }
+      : m_data(v2.data()), m_size(v2.size())
+    {
+      if constexpr (std::is_same_v<TDIST, std::integral_constant<size_t, 1>>)
+        m_dist = TDIST{}; // use compile-time constant
+      else
+        m_dist = v2.dist();
+    }
     
     VectorView (size_t size, T * data)
       : m_data(data), m_size(size) { }
@@ -120,11 +126,15 @@ namespace ASC_bla
       return *this;
     }
     
-    size_t Size() const { return m_size; }
+    // this function could be removed, as there exists an equivalent one in base class
+    // the difference being, uppercase vs. lowercase initial (lowercase would be more consistent)
+    // size_t Size() const { return m_size; }
+
+    // the following two functions could also be removed, as there exist equivalent ones in base class
     // access operator (contiguous storage in Vector)
-    T & operator()(size_t i) { return m_data[i]; }
+    // T & operator()(size_t i) { return m_data[i]; }
     // access operator (for const objects)
-    const T & operator()(size_t i) const { return m_data[i]; }
+    // const T & operator()(size_t i) const { return m_data[i]; }
   };
 
   /*
@@ -175,7 +185,7 @@ namespace ASC_bla
 */  
 
   template <typename E>
-  std::ostream & operator<< (std::ostream & ost, const Vector<E> & vexpr)
+  std::ostream & operator<< (std::ostream & ost, const VectorView<E> & vexpr)
   {
     const auto & v = vexpr.derived();
     if (v.size() > 0)

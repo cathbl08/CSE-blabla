@@ -63,6 +63,26 @@ namespace ASC_bla
     size_t rows() const { return m_rows; }
     size_t cols() const { return m_cols; }
 
+    // obtain specific row as a VectorView
+    VectorView<T> row(size_t i) const
+    {
+      if constexpr (ORD == RowMajor)
+        return VectorView<T>(m_cols, &m_data[Index(i,0)]);
+      else
+        // FIXME not working properly (cf. demo_matrix)
+        return VectorView<T, size_t>(m_cols, m_rows, &m_data[i]);
+    }
+    // obtain specific column as a VectorView
+    VectorView<T> col(size_t j)
+    {
+      if constexpr (ORD == ColMajor)
+        return VectorView<T>(m_rows, &m_data[Index(0,j)]);
+      else
+        // FIXME not working properly (cf. demo_matrix)
+        return VectorView<T, size_t>(m_rows, m_cols, &m_data[j]);
+    }
+
+
     // assignment operator but from MatExpr
     template <typename TB>
     MatrixView & operator= (const MatExpr<TB> & A)
@@ -93,12 +113,6 @@ namespace ASC_bla
     using BASE::operator=; // bring in MatrixView assignment from expressions
 
   public:
-    // MatrixView (size_t _row, size_t _col) 
-    //       : rows(_row), cols(_col), data(new T[_row * _col]) {
-    //     for (size_t i = 0; i < rows*cols; i++)
-    //       data[i] = 0;
-    //   }
-
     Matrix (size_t rows, size_t cols) : BASE() {
       m_rows = rows;
       m_cols = cols;
@@ -172,60 +186,60 @@ namespace ASC_bla
     }
 
     // matrix inverse using Gauss-Jordan: [A,I] -> [I, A^-1]
-    // Matrix inv() const {
-    //   if (rows != cols){
-    //     throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
-    //   }
-    //   else
-    //   {
-    //     Matrix<T, ORD> inverse(cols), tab(rows, 2*cols); // initializes as identity matrix
-    //     tab = *this<inverse;
-    //     for (size_t i = 0; i < rows; i++){
-    //       int pivot = i;
-    //       while (pivot < rows && std::fabs(tab(pivot,i)) < 1e-9){
-    //         pivot++;
-    //       }
-    //       if (pivot == rows){
-    //         throw std::invalid_argument("Matrix is singular.");
-    //       }
+    Matrix inv() const {
+      if (m_rows != m_cols){
+        throw std::invalid_argument("Matrix inversion not defined. Matrix must be quadratic.");
+      }
+      else
+      {
+        Matrix<T, ORD> inverse(m_cols), tab(m_rows, 2*m_cols); // initializes as identity matrix
+        tab = *this<inverse;
+        for (size_t i = 0; i < m_rows; i++){
+          int pivot = i;
+          while (pivot < m_rows && std::fabs(tab(pivot,i)) < 1e-9){
+            pivot++;
+          }
+          if (pivot == m_rows){
+            throw std::invalid_argument("Matrix is singular.");
+          }
           
-    //       tab.swapRows(i,pivot);
-    //       T pivot_val = tab(i,i);
+          tab.swapRows(i,pivot);
+          T pivot_val = tab(i,i);
           
-    //       // normalize pivot, row transformation
-    //       for (int j = i; j < tab.Cols(); j++) {
-    //         tab(i,j) /= pivot_val;
-    //       }
+          // normalize pivot, row transformation
+          for (int j = i; j < tab.cols(); j++) {
+            tab(i,j) /= pivot_val;
+          }
           
-    //       // zeros below pivot
-    //       for (size_t k = i+1; k < rows; k++){
-    //         T factor = tab(k,i);
-    //         for (size_t j = i; j < tab.Cols(); j++){
-    //           tab(k,j) -= factor * tab(i,j);
-    //         }
-    //       }
-    //     }
+          // zeros below pivot
+          for (size_t k = i+1; k < m_rows; k++){
+            T factor = tab(k,i);
+            for (size_t j = i; j < tab.cols(); j++){
+              tab(k,j) -= factor * tab(i,j);
+            }
+          }
+        }
         
-    //     // zeros above pivot
-    //     for (int i = rows-1; i >= 0; i--){
-    //       for (int k = i - 1; k >= 0; k--){
-    //         T factor = tab(k,i);
-    //         for (size_t j = i; j < tab.Cols(); ++j){
-    //           tab(k,j) -= factor * tab(i,j);
-    //         }
-    //       }
+        // zeros above pivot
+        for (int i = m_rows-1; i >= 0; i--){
+          for (int k = i - 1; k >= 0; k--){
+            T factor = tab(k,i);
+            for (size_t j = i; j < tab.cols(); ++j){
+              tab(k,j) -= factor * tab(i,j);
+            }
+          }
           
-    //     }
-    //     // std::cout << tab << std::endl; // DOES NOTHING
-    //     Matrix<T, ORD> res(cols,cols);
-    //     for (size_t i = 0; i < rows; i++){
-    //       for (size_t j = 0; j < rows; j++){
-    //         res(i,j) = tab(i,j+cols);
-    //         }
-    //       }
-    //     return res;
-    //   }
-    // }
+        }
+        // std::cout << tab << std::endl; // DOES NOTHING
+        Matrix<T, ORD> res(m_cols,m_cols);
+        for (size_t i = 0; i < m_rows; i++){
+          for (size_t j = 0; j < m_rows; j++){
+            res(i,j) = tab(i,j+m_cols);
+            }
+          }
+        return res;
+      }
+    }
 
     // assignment operator (move)
     // Matrix & operator= (Matrix && A2)
@@ -235,9 +249,6 @@ namespace ASC_bla
     //   std::swap(m_data, A2.data);
     //   return *this;
     // }
-    
-    // size_t Rows() const { return rows; }
-    // size_t Cols() const { return cols; }
 
     Matrix & operator = (Matrix&& A2)
     {
@@ -250,22 +261,6 @@ namespace ASC_bla
       A2.m_rows = 0; A2.m_cols = 0; A2.m_dist = 0; A2.m_data = nullptr;
       return *this;
     }
-
-    // // access operator
-    // T & operator()(size_t i, size_t j) {
-    //   if constexpr (ORD == RowMajor)
-    //     return m_data[i*m_dist + j];
-    //   else
-    //     return m_data[i + j*m_dist];
-    // }
-
-    // // access operator (for const objects)
-    // const T & operator()(size_t i, size_t j) const {
-    //   if constexpr (ORD == RowMajor)
-    //     return m_data[i*m_dist + j];
-    //   else
-    //     return m_data[i + j*m_dist];
-    // }
   };
 
   // matrix-matrix addition
@@ -309,6 +304,7 @@ namespace ASC_bla
   }
 
   template <typename T, ORDERING ORD>
+  // TODO might have to change argument type from Matrix to the more general MatrixView (so that it's also possible to print content of a MatrixView object, e.g. when slicing)
   std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
   {
     for (size_t i = 0; i < A.rows(); i++){
@@ -320,32 +316,32 @@ namespace ASC_bla
     return ost;
   }
   
-  // // matrix transpose
-  // template <typename T, ORDERING ORD>
-  // Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
-  // {
-  //   Matrix<T, ORD> transpose(A.Cols(),A.Rows());
-  //   for (size_t i = 0; i < A.Rows(); i++)
-  //     for (size_t j = 0; j < A.Cols(); j++)
-  //       transpose(j,i) = A(i,j);
-  //   return transpose;
-  // }
+  // matrix transpose
+  template <typename T, ORDERING ORD>
+  Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
+  {
+    Matrix<T, ORD> transpose(A.cols(), A.rows());
+    for (size_t i = 0; i < A.rows(); i++)
+      for (size_t j = 0; j < A.cols(); j++)
+        transpose(j,i) = A(i,j);
+    return transpose;
+  }
 
-  // // sideway concatenation
-  // template <typename T, ORDERING ORD>
-  // Matrix<T, ORD> operator< (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
-  // {
-  //   Matrix<T, ORD> C(A.Rows(), A.Cols()+B.Cols());
-  //   for (size_t i = 0; i < C.Rows(); i++){
-  //     for (size_t j = 0; j < A.Cols(); j++){
-  //       C(i,j) = A(i,j);
-  //     }
-  //     for (size_t j = 0; j < B.Cols(); j++){
-  //       C(i,j + A.Cols()) = B(i,j);    
-  //     }
-  //   }
-  //   return C;
-  // }
+  // sideway concatenation
+  template <typename T, ORDERING ORD>
+  Matrix<T, ORD> operator< (const Matrix<T, ORD> & A, const Matrix<T, ORD> & B)
+  {
+    Matrix<T, ORD> C(A.rows(), A.cols() + B.cols());
+    for (size_t i = 0; i < C.rows(); i++){
+      for (size_t j = 0; j < A.cols(); j++){
+        C(i,j) = A(i,j);
+      }
+      for (size_t j = 0; j < B.cols(); j++){
+        C(i,j + A.cols()) = B(i,j);    
+      }
+    }
+    return C;
+  }
 
 }
 
