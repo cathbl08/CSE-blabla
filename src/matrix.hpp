@@ -64,22 +64,22 @@ namespace ASC_bla
     size_t cols() const { return m_cols; }
 
     // obtain specific row as a VectorView
-    VectorView<T> row(size_t i) const
+    auto row(size_t i) const
     {
       if constexpr (ORD == RowMajor)
         return VectorView<T>(m_cols, &m_data[Index(i,0)]);
       else
-        // FIXME not working properly (cf. demo_matrix)
-        return VectorView<T, size_t>(m_cols, m_rows, &m_data[i]);
+        // Column major: elements are strided by m_dist (which is m_rows)
+        return VectorView<T, size_t>(m_cols, m_dist, &m_data[i]);
     }
     // obtain specific column as a VectorView
-    VectorView<T> col(size_t j)
+    auto col(size_t j) const
     {
       if constexpr (ORD == ColMajor)
         return VectorView<T>(m_rows, &m_data[Index(0,j)]);
       else
-        // FIXME not working properly (cf. demo_matrix)
-        return VectorView<T, size_t>(m_rows, m_cols, &m_data[j]);
+        // Row major: elements are strided by m_dist (which is m_cols)
+        return VectorView<T, size_t>(m_rows, m_dist, &m_data[j]);
     }
 
 

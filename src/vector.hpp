@@ -184,10 +184,10 @@ namespace ASC_bla
   }
 */  
 
-  template <typename E>
-  std::ostream & operator<< (std::ostream & ost, const VectorView<E> & vexpr)
+  template <typename T, typename TDIST>
+  std::ostream & operator<< (std::ostream & ost, const VectorView<T, TDIST> & vec)
   {
-    const auto & v = vexpr.derived();
+    const auto & v = vec.derived();
     if (v.size() > 0)
       ost << v(0);
     for (size_t i = 1; i < v.size(); i++)
