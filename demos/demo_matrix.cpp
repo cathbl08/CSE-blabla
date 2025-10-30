@@ -10,7 +10,6 @@ int main()
 {
     size_t n = 5, m = 4;
     bla::Vector<double> x(n), y(n);
-    // TODO test with ColumnMajor storage as well
     bla::Matrix<double> A(n, m), B(n, m), C(n, n), D(n, m);
 
     // init vector
@@ -41,14 +40,28 @@ int main()
     std::cout << A.col(1) << std::endl;
     std::cout << std::endl;
 
+    std::cout << "---- A.rows(2,4) ----" << std::endl;
+    std::cout << A.rows(2,4) << std::endl;
+    std::cout << "---- A.cols(1,3) ----" << std::endl;
+    std::cout << A.cols(1,3) << std::endl;
+    std::cout << std::endl;
+
     bla::Matrix<double, ASC_bla::ColMajor> AA(A);
     std::cout << "---- Matrix AA (Column Major from A) ----" << std::endl;
     std::cout << AA << std::endl;
+
     std::cout << "---- AA.row(2) ----" << std::endl;
     std::cout << AA.row(2) << std::endl;
     std::cout << "---- AA.col(1) ----" << std::endl;
     std::cout << AA.col(1) << std::endl;
     std::cout << std::endl;
+
+    std::cout << "---- AA.rows(2,4) ----" << std::endl;
+    std::cout << AA.rows(2,4) << std::endl;
+    std::cout << "---- AA.cols(1,3) ----" << std::endl;
+    std::cout << AA.cols(1,3) << std::endl;
+    std::cout << std::endl;
+
 
     std::cout << "---- Matrix A transpose ----" << std::endl;
     std::cout << Transpose(A) << std::endl;

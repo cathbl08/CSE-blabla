@@ -82,6 +82,29 @@ namespace ASC_bla
         return VectorView<T, size_t>(m_rows, m_dist, &m_data[j]);
     }
 
+    // obtain a specific range of rows as a MatrixView; row 'last' is not included in the result
+    auto rows(size_t first, size_t last) const
+    {
+      size_t range = last - first;
+
+      if constexpr (ORD == RowMajor)
+        return MatrixView<T>(range, m_cols, &m_data[Index(first,0)]);
+      else
+        // Column major: elements are strided by m_dist (which is m_rows)
+        return MatrixView<T, ORD, size_t>(range, m_cols, m_dist, &m_data[first]);
+    }
+
+    // obtain a specific range of columns as a MatrixView; column 'last' is not included in the result
+    auto cols(size_t first, size_t last) const
+    {
+      size_t range = last - first;
+
+      if constexpr (ORD == ColMajor)
+        return MatrixView<T, ColMajor>(m_rows, range, &m_data[Index(0,first)]);
+      else
+        // Column major: elements are strided by m_dist (which is m_rows)
+        return MatrixView<T, ORD, size_t>(m_rows, range, m_dist, &m_data[first]);
+    }
 
     // assignment operator but from MatExpr
     template <typename TB>
@@ -303,9 +326,8 @@ namespace ASC_bla
     return A*B;
   }
 
-  template <typename T, ORDERING ORD>
-  // TODO might have to change argument type from Matrix to the more general MatrixView (so that it's also possible to print content of a MatrixView object, e.g. when slicing)
-  std::ostream & operator<< (std::ostream & ost, const Matrix<T,ORD> & A)
+  template <typename T, ORDERING ORD, typename TDIST>
+  std::ostream & operator<< (std::ostream & ost, const MatrixView<T,ORD,TDIST> & A)
   {
     for (size_t i = 0; i < A.rows(); i++){
       for (size_t j = 0; j < A.cols(); j++){
