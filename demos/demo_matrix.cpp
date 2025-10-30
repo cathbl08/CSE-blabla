@@ -64,7 +64,11 @@ int main()
 
 
     std::cout << "---- Matrix A transpose ----" << std::endl;
-    std::cout << Transpose(A) << std::endl;
+    std::cout << A.transpose() << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "---- Matrix AA transpose ----" << std::endl;
+    std::cout << AA.transpose() << std::endl;
     std::cout << std::endl;
 
     B = A;

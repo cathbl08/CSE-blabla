@@ -124,6 +124,15 @@ namespace ASC_bla
       }
       return *this;
     }
+
+    // matrix transpose
+    auto transpose()
+    {
+      if constexpr (ORD == RowMajor)
+        return MatrixView<T, ColMajor>(m_cols, m_rows, m_dist, m_data);
+      else
+        return MatrixView<T, RowMajor>(m_cols, m_rows, m_dist, m_data);
+    }
   }; // end class MatrixView
 
   template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
@@ -336,17 +345,6 @@ namespace ASC_bla
       }
     }
     return ost;
-  }
-  
-  // matrix transpose
-  template <typename T, ORDERING ORD>
-  Matrix<T, ORD> Transpose (const Matrix<T, ORD> & A)
-  {
-    Matrix<T, ORD> transpose(A.cols(), A.rows());
-    for (size_t i = 0; i < A.rows(); i++)
-      for (size_t j = 0; j < A.cols(); j++)
-        transpose(j,i) = A(i,j);
-    return transpose;
   }
 
   // sideway concatenation
