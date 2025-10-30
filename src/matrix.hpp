@@ -198,13 +198,7 @@ namespace ASC_bla
 
     // row manipulation
     Matrix& swapRows(size_t i1, size_t i2) {
-      if constexpr (ORD == RowMajor) {
-        for (size_t j = 0; j < m_cols; ++j)
-          std::swap(m_data[this->Index(i1,j)], m_data[this->Index(i2,j)]);
-      } else {
-        for (size_t j = 0; j < m_cols; ++j)
-          std::swap(m_data[this->Index(i1,j)], m_data[this->Index(i2,j)]);
-      }
+      std::swap(*(this->row(i1).data()), *(this->row(i2).data()));
       return *this;
     }
 
