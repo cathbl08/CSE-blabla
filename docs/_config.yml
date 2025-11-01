@@ -2,8 +2,8 @@
 # Learn more at https://jupyterbook.org/customize/config.html
 
 title: Introduction to Scientific Computing
-author: J. Schöberl
-logo: ASC_Logo_transparent_300ppi_RGB.png
+author: J. Schöberl & CSE students
+logo: CSE.png
 copyright : "2025"  # Copyright year to be placed in the footer
 
 

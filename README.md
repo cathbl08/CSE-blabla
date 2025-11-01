@@ -1,12 +1,13 @@
 # ASC-bla
 A simple basic linear algebra implementation using modern C++.
 
+confirm link below works?
+Read the [Documentation](https://cathbl08.github.io/CSE-blabla/intro.html)
 
-Read the [Documentation](https://tuwien-asc.github.io/ASC-bla/intro.html)
 
+Telling the truth: CSE-blabla is not really a complete library,
+but a starting point for a four CSE students to work on and develop further.
 
-telling the truth: ASC-bla is not really a complete library,
-but a starting point for writing your own library, for example as a student's project.
 Here are notes on the
 [development process](https://jschoeberl.github.io/IntroSC/intro.html)
 
