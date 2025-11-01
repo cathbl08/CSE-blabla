@@ -1,8 +1,15 @@
-# Welcome to ASC-bla's documentation!
-
+# Welcome to ASC-bla's documentation! Hello from Group CSE-blabla!
 
 ASC-bla is a C++ library for basic linear algebra operations.
 The library provides template classes **Vector** and **Matrix**.
+
+The development of the library is performed by the group CSE-blabla thoughout the semester.
+
+Group members:
+- Andreas Kickenweitz, 11771225
+- Catherine Bley, 12002266
+- Marcus Konrath, 01300688
+- Natalia Tylek, 12332258
 
 ## Installation
 
@@ -24,8 +31,8 @@ To configure and build some tests do
 
 To use ASC-bla in your code, set the compiler include path properly, and include the header files
 
-    #include <vector.h>
-    #include <matrix.h>
+    #include <vector.hpp>
+    #include <matrix.hpp>
 
 All objects are implemented in the namespace ASC_bla. To use them with less typing, you can set
 
