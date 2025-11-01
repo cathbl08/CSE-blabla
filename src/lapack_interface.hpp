@@ -5,6 +5,7 @@
 #include <string>
 
 #include "vector.hpp"
+#include "matrix.hpp"
 
 
 
@@ -60,7 +61,7 @@ namespace ASC_bla
   // doublereal *b, integer *ldb, doublereal *beta, doublereal *c__, 
   // integer *ldc);
 
-  /*  
+   
   // c = a*b
   template <ORDERING OA, ORDERING OB>
   void multMatMatLapack (MatrixView<double, OA> a,
@@ -88,14 +89,14 @@ namespace ASC_bla
       throw std::runtime_error(std::string("MultMatMat got error "+std::to_string(err)));
   }
                        
-  template <ORDERING OA, ORDERING OB>
-  int multMatMatLapack (MatrixView<double, OA> a,
-                        MatrixView<double, OB> b,
-                        MatrixView<double, RowMajor> c)
-  {
-    multMatMatLapack (trans(b), trans(a), trans(c));
-  }
-  */
+  // template <ORDERING OA, ORDERING OB>
+  // int multMatMatLapack (MatrixView<double, OA> a,
+  //                       MatrixView<double, OB> b,
+  //                       MatrixView<double, RowMajor> c)
+  // {
+  //   multMatMatLapack (trans(b), trans(a), trans(c));
+  // }
+  
 
   
 

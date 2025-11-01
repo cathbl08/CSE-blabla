@@ -27,6 +27,13 @@ namespace ASC_bla
 }
 
   public:
+
+    size_t rows() const noexcept { return m_rows; }
+    size_t cols() const noexcept { return m_cols; }
+    size_t dist() const noexcept { return m_dist; }
+    T* data() noexcept { return m_data; }
+    const T* data() const noexcept { return m_data; }
+    
     MatrixView() = default;
     MatrixView(const MatrixView &) = default;
 
@@ -37,8 +44,8 @@ namespace ASC_bla
       return m_data[Index(i,j)];
     }
 
-    T*       data()       { return m_data; }
-    const T* data() const { return m_data; }
+    // T*       data()       { return m_data; }
+    // const T* data() const { return m_data; }
 
 
     // matrixview from another matrixview
@@ -60,8 +67,8 @@ namespace ASC_bla
       }
 
     // crtp 
-    size_t rows() const { return m_rows; }
-    size_t cols() const { return m_cols; }
+    // size_t rows() const { return m_rows; }
+    // size_t cols() const { return m_cols; }
 
     // obtain specific row as a VectorView
     auto row(size_t i) const
