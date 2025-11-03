@@ -44,6 +44,21 @@ int main()
 
   cout << "C = A*B = " << endl;
   cout << C << endl;
+
+  // Row-major result C
+  Matrix<double, RowMajor> C_rm(2,2);
+  multMatMatLapack(A, B, C_rm);
+
+  cout << "C_rm (RowMajor) = A*B = " << endl;
+  cout << C_rm << endl;
+
+  double expected[2][2] = {{58, 64}, {139, 154}};
+  bool ok = true;
+  for (size_t i = 0; i < 2; ++i)
+    for (size_t j = 0; j < 2; ++j)
+      if (std::abs(C_rm(i,j) - expected[i][j]) > 1e-12) ok = false;
+
+  cout << (ok ? "RowMajor matmul OK " : "RowMajor matmul mismatch ehh )))") << endl;
 }
 
   

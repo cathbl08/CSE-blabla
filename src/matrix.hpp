@@ -142,6 +142,13 @@ namespace ASC_bla
     }
   }; // end class MatrixView
 
+  // matmatmult LAPACK row majow transposition
+  template <class T, ORDERING ORD, class TDIST>
+  inline auto trans(MatrixView<T,ORD,TDIST> v)
+  {
+      return v.transpose();
+  }
+
   template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
   class Matrix : public MatrixView<T,ORD, TDIST>
   {

@@ -63,39 +63,72 @@ namespace ASC_bla
 
    
   // c = a*b
-  template <ORDERING OA, ORDERING OB>
-  void multMatMatLapack (MatrixView<double, OA> a,
-                         MatrixView<double, OB> b,
-                         MatrixView<double, ColMajor> c)
-  {
-    char transa_ = (OA == ColMajor) ? 'N' : 'T';
-    char transb_ = (OB == ColMajor) ? 'N' : 'T'; 
-  
-    integer n = c.rows();
-    integer m = c.cols();
-    integer k = a.dist();
-  
-    double alpha = 1.0;
-    double beta = 0;
-    integer lda = std::max(a.dist(), 1ul);
-    integer ldb = std::max(b.dist(), 1ul);
-    integer ldc = std::max(c.dist(), 1ul);
-
-    int err =
-      dgemm_ (&transa_, &transb_, &n, &m, &k, &alpha, 
-              a.data(), &lda, b.data(), &ldb, &beta, c.data(), &ldc);
-
-    if (err != 0)
-      throw std::runtime_error(std::string("MultMatMat got error "+std::to_string(err)));
-  }
-                       
   // template <ORDERING OA, ORDERING OB>
-  // int multMatMatLapack (MatrixView<double, OA> a,
-  //                       MatrixView<double, OB> b,
-  //                       MatrixView<double, RowMajor> c)
+  // void multMatMatLapack (MatrixView<double, OA> a,
+  //                        MatrixView<double, OB> b,
+  //                        MatrixView<double, ColMajor> c)
   // {
-  //   multMatMatLapack (trans(b), trans(a), trans(c));
+  //   char transa_ = (OA == ColMajor) ? 'N' : 'T';
+  //   char transb_ = (OB == ColMajor) ? 'N' : 'T'; 
+  
+  //   integer n = c.rows();
+  //   integer m = c.cols();
+  //   integer k = a.dist();
+  
+  //   double alpha = 1.0;
+  //   double beta = 0;
+  //   integer lda = std::max(a.dist(), 1ul);
+  //   integer ldb = std::max(b.dist(), 1ul);
+  //   integer ldc = std::max(c.dist(), 1ul);
+
+  //   int err =
+  //     dgemm_ (&transa_, &transb_, &n, &m, &k, &alpha, 
+  //             a.data(), &lda, b.data(), &ldb, &beta, c.data(), &ldc);
+
+  //   if (err != 0)
+  //     throw std::runtime_error(std::string("MultMatMat got error "+std::to_string(err)));
   // }
+                       
+  // // template <ORDERING OA, ORDERING OB>
+  // // int multMatMatLapack (MatrixView<double, OA> a,
+  // //                       MatrixView<double, OB> b,
+  // //                       MatrixView<double, RowMajor> c)
+  // // {
+  // //   multMatMatLapack (trans(b), trans(a), trans(c));
+  // // }
+  
+  template <ORDERING OA, ORDERING OB>
+  void multMatMatLapack(MatrixView<double, OA> a,
+                        MatrixView<double, OB> b,
+                        MatrixView<double, ColMajor> c)
+  {
+      char transa = (OA == ColMajor) ? 'N' : 'T';
+      char transb = (OB == ColMajor) ? 'N' : 'T';
+
+      integer m = static_cast<integer>(c.rows()); // dimensions of C 
+      integer n = static_cast<integer>(c.cols()); 
+      integer k = static_cast<integer>(a.cols());   // NOT a.dist() ? must match inner dim not stride
+
+      double alpha = 1.0, beta = 0.0;
+      integer lda = static_cast<integer>(std::max<size_t>(1, a.dist()));
+      integer ldb = static_cast<integer>(std::max<size_t>(1, b.dist()));
+      integer ldc = static_cast<integer>(std::max<size_t>(1, c.dist()));
+
+      int err = dgemm_(&transa, &transb, &m, &n, &k,
+                      &alpha, a.data(), &lda, b.data(), &ldb,
+                      &beta,  c.data(), &ldc);
+      if (err) throw std::runtime_error("Lapack dgemm error " + std::to_string(err));
+  }
+
+  template <ORDERING OA, ORDERING OB>
+  void multMatMatLapack(MatrixView<double, OA> a,
+                        MatrixView<double, OB> b,
+                        MatrixView<double, RowMajor> c)
+  {
+      // C^T = B^T * A^T
+      multMatMatLapack( trans(b), trans(a), trans(c) );
+  }
+
   
 
   
