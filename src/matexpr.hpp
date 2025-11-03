@@ -58,8 +58,22 @@ namespace ASC_bla
     size_t cols() const { return mat.cols(); }      
   };
   
-  template <typename S, typename TM>
-  auto operator* (S scal, const MatExpr<TM> & m)
+  // template <typename S, typename TM>
+  // auto operator* (S scal, const MatExpr<TM> & m)
+  // {
+  //   return ScaleMatExpr<S, TM>(scal, m.derived());
+  // }
+
+  template <typename S, typename TM,
+          std::enable_if_t<std::is_arithmetic_v<S>, int> = 0>
+  auto operator*(S scal, const MatExpr<TM>& m)
+  {
+    return ScaleMatExpr<S, TM>(scal, m.derived());
+  }
+
+  template <typename TM, typename S,
+            std::enable_if_t<std::is_arithmetic_v<S>, int> = 0>
+  auto operator*(const MatExpr<TM>& m, S scal)
   {
     return ScaleMatExpr<S, TM>(scal, m.derived());
   }
@@ -70,10 +84,15 @@ namespace ASC_bla
   template <typename TA, typename TB>
   class MultMatExpr : public MatExpr<MultMatExpr<TA,TB>>
   {
+    
     TA A;
     TB B;
 
   public:
+
+    const TA& left()  const { return A; }
+    const TB& right() const { return B; }
+
     MultMatExpr(TA _A, TB _B) : A(_A), B(_B){}
     auto operator() (size_t i, size_t j) const
     {
@@ -145,6 +164,30 @@ namespace ASC_bla
 
   // Note: Matrix stream operator<< is defined in matrix.hpp to avoid include cycles.
   
+  struct T_Lapack {};
+  inline constexpr T_Lapack Lapack{};
+
+  // The “decorated” expression
+  template <class TA, class TB>
+  class LapackMultExpr : public MatExpr<LapackMultExpr<TA,TB>> {
+    TA A; TB B;
+  public:
+    LapackMultExpr(TA a, TB b) : A(std::move(a)), B(std::move(b)) {}
+    size_t rows() const { return A.rows(); }
+    size_t cols() const { return B.cols(); }
+    auto operator()(size_t i, size_t j) const { return MultMatExpr<TA,TB>(A,B)(i,j); }
+    const TA& left()  const { return A; }
+    const TB& right() const { return B; }
+  };
+
+  // Generic operator| for ANY MultMatExpr
+  template <class TA, class TB>
+  inline auto operator|(const MultMatExpr<TA,TB>& mult, T_Lapack) {
+    // We need accessors on MultMatExpr:
+    //   const TA& left() const;  const TB& right() const;
+    return LapackMultExpr<TA,TB>(mult.left(), mult.right());
+  }
+
 }
  
 #endif

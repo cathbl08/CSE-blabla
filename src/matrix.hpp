@@ -140,6 +140,17 @@ namespace ASC_bla
       else
         return MatrixView<T, RowMajor>(m_cols, m_rows, m_dist, m_data);
     }
+
+    template <typename TA, typename TB>
+    MatrixView& operator=(const LapackMultExpr<TA,TB>& L)
+    {
+      static_assert(std::is_same_v<T,double>,
+                    "Lapack path currently implemented only for double");
+      multMatMatLapack(L.left(), L.right(), *this);
+      return *this;
+    }
+
+
   }; // end class MatrixView
 
   // matmatmult LAPACK row majow transposition

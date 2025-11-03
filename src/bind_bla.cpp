@@ -4,6 +4,8 @@
 
 #include "vector.hpp"
 #include "matrix.hpp"
+#include "matexpr.hpp"
+#include "lapack_interface.hpp"
 
 using namespace ASC_bla;
 namespace py = pybind11;
@@ -164,5 +166,22 @@ PYBIND11_MODULE(bla, m) {
           std::memcpy(&m(0, 0), PYBIND11_BYTES_AS_STRING(mem.ptr()), m.rows()*m.cols()*sizeof(double));
           return m;
         }))
+
+        
     ;
+    m.def("matmul_lapack", [](const Matrix<double, RowMajor>& A,
+                          const Matrix<double, RowMajor>& B)
+    {
+        if (A.cols() != B.rows())
+            throw std::runtime_error("Incompatible shapes");
+
+        Matrix<double, RowMajor> C(A.rows(), B.cols());
+
+        MatrixView<double, RowMajor> Av = A;
+        MatrixView<double, RowMajor> Bv = B;
+        MatrixView<double, RowMajor> Cv = C;
+
+        Cv = (Av * Bv) | Lapack;  // calls dgemm
+        return C;
+    }, "Matrix-matrix multiply using LAPACK (dgemm)");
 }

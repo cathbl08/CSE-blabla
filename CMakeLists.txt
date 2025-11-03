@@ -26,6 +26,13 @@ execute_process(
 list(APPEND CMAKE_PREFIX_PATH "${PYBIND11_DIR}")
 find_package(pybind11 CONFIG REQUIRED)
 
+# BLAS/LAPACK detection
+find_package(OpenBLAS)
+if(NOT OpenBLAS_FOUND)
+  find_package(BLAS REQUIRED)
+  find_package(LAPACK REQUIRED)
+endif()
+
 
 add_subdirectory (demos)
 
@@ -44,6 +51,15 @@ target_link_libraries (test_lapack PUBLIC LAPACK::LAPACK)
 
 
 pybind11_add_module(bla src/bind_bla.cpp)
+
+#  fixing "undefined symbol: dgemm_"
+if (TARGET OpenBLAS::OpenBLAS)
+  target_link_libraries(bla PRIVATE OpenBLAS::OpenBLAS)
+elseif (TARGET LAPACK::LAPACK)
+  target_link_libraries(bla PRIVATE LAPACK::LAPACK)
+else()
+  target_link_libraries(bla PRIVATE ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
+endif()
 
 install (TARGETS bla DESTINATION ASCsoft)
 install (FILES src/vector.hpp DESTINATION ASCsoft/include)

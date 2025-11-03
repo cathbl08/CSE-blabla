@@ -3,7 +3,7 @@
 #include <vector.hpp>
 #include <matrix.hpp>
 #include <lapack_interface.hpp>
-
+#include "matexpr.hpp"  
 
 using namespace ASC_bla;
 using namespace std;
@@ -59,6 +59,26 @@ int main()
       if (std::abs(C_rm(i,j) - expected[i][j]) > 1e-12) ok = false;
 
   cout << (ok ? "RowMajor matmul OK " : "RowMajor matmul mismatch ehh )))") << endl;
+
+
+  // ------- Same matrices, now via syntactic sugar -------
+  Matrix<double, RowMajor> C_sugar(2,2);
+  MatrixView<double, RowMajor> Av = A, Bv = B, Cv = C_sugar;
+
+  Cv = (Av * Bv) | Lapack;
+
+  cout << "C_sugar (RowMajor) = (A*B)|Lapack =" << endl;
+  cout << C_sugar << endl;
+
+  bool ok_sugar = true;
+  for (size_t i = 0; i < 2; ++i)
+    for (size_t j = 0; j < 2; ++j)
+      if (std::abs(C_sugar(i,j) - expected[i][j]) > 1e-12) ok_sugar = false;
+
+  cout << (ok_sugar ? "Sugar matmul OK" : "Sugar matmul mismatch") << endl;
+
+  return 0;
+  
 }
 
   
