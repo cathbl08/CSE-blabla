@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Welcome to ASC-bla’s documentation! Hello from Group CSE-blabla! &#8212; Introduction to Scientific Computing</title>
+    <title>Welcome to ASC-bla’s documentation! &#8212; Introduction to Scientific Computing</title>
   
   
   
@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -153,8 +153,8 @@
       
     
     
-    <img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-light" alt="Introduction to Scientific Computing - Home"/>
-    <script>document.write(`<img src="_static/ASC_Logo_transparent_300ppi_RGB.png" class="logo__image only-dark" alt="Introduction to Scientific Computing - Home"/>`);</script>
+    <img src="_static/CSE.png" class="logo__image only-light" alt="Introduction to Scientific Computing - Home"/>
+    <script>document.write(`<img src="_static/CSE.png" class="logo__image only-dark" alt="Introduction to Scientific Computing - Home"/>`);</script>
   
   
 </a></div>
@@ -175,7 +175,7 @@
         <ul class="nav bd-sidenav bd-sidenav__home-link">
             <li class="toctree-l1 current active">
                 <a class="reference internal" href="#">
-                    Welcome to ASC-bla’s documentation! Hello from Group CSE-blabla!
+                    Welcome to ASC-bla’s documentation!
                 </a>
             </li>
         </ul>
@@ -331,7 +331,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Welcome to ASC-bla’s documentation! Hello from Group CSE-blabla!</h1>
+    <h1>Welcome to ASC-bla’s documentation!</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -341,9 +341,16 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Welcome to ASC-bla’s documentation!</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-from-group-cse-blabla">Hello from Group CSE-blabla!</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-asc-bla">Using ASC-bla</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-libary-from-python">Use the libary from Python</a></li>
 </ul>
+</li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -354,11 +361,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="welcome-to-asc-bla-s-documentation-hello-from-group-cse-blabla">
-<h1>Welcome to ASC-bla’s documentation! Hello from Group CSE-blabla!<a class="headerlink" href="#welcome-to-asc-bla-s-documentation-hello-from-group-cse-blabla" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="welcome-to-asc-bla-s-documentation">
+<h1>Welcome to ASC-bla’s documentation!<a class="headerlink" href="#welcome-to-asc-bla-s-documentation" title="Link to this heading">#</a></h1>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="hello-from-group-cse-blabla">
+<h1>Hello from Group CSE-blabla!<a class="headerlink" href="#hello-from-group-cse-blabla" title="Link to this heading">#</a></h1>
 <p>ASC-bla is a C++ library for basic linear algebra operations.
 The library provides template classes <strong>Vector</strong> and <strong>Matrix</strong>.</p>
-<p>The development of the library is performed by the group CSE-blabla thoughout the semester.</p>
+<p>The development of the library is performed by the group CSE-blabla.</p>
 <p>Group members:</p>
 <ul class="simple">
 <li><p>Andreas Kickenweitz, 11771225</p></li>
@@ -366,18 +376,29 @@ The library provides template classes <strong>Vector</strong> and <strong>Matrix
 <li><p>Marcus Konrath, 01300688</p></li>
 <li><p>Natalia Tylek, 12332258</p></li>
 </ul>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<p>ASC-bla is a C++ dense linear algebra library providing efficient, template-based classes for basic operations on vectors and matrices.
+It combines expression templates, Lapack interface, and pybind11 binding for use from both C++ and Python.</p>
+</section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h2>
 <p>install it via git-clone:</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/TUWien-ASC/ASC-bla.git
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/cathbl08/CSE-blabla.git
 </pre></div>
 </div>
+<p>upstream repo:
+git clone <a class="github reference external" href="https://github.com/TUWien-ASC/ASC-bla.git">TUWien-ASC/ASC-bla.git</a></p>
 <p>To configure and build some tests do</p>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd ASC-bla
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cd CSE-blabla
 mkdir build
 cd build
 cmake ..
 make
+</pre></div>
+</div>
+<p>on Windows systems replace only <strong>make</strong> with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>cmake --build .
 </pre></div>
 </div>
 </section>
@@ -392,7 +413,7 @@ make
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>namespace bla = ASC_bla;
 </pre></div>
 </div>
-<p>or even</p>
+<p>or</p>
 <div class="highlight-none notranslate"><div class="highlight"><pre><span></span>using namespace ASC_bla;
 </pre></div>
 </div>
@@ -411,15 +432,95 @@ default is row-major.</p>
 <span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m1</span><span class="p">.</span><span class="n">Height</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
 <span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m1</span><span class="p">.</span><span class="n">Width</span><span class="p">();</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
 <span class="w">    </span><span class="n">m1</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">;</span>
-<span class="n">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.7</span><span class="p">;</span>
+<span class="n">m2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.</span>
 <span class="n">Matrix</span><span class="w"> </span><span class="n">product</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">m2</span><span class="p">;</span>
 </pre></div>
 </div>
 <p>You can extract a row or a column from a matrix:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span><span class="w"> </span><span class="n">col1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">product</span><span class="p">.</span><span class="n">Col</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">r2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="p">.</span><span class="n">row</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span><span class="w">   </span>
+<span class="k">auto</span><span class="w"> </span><span class="n">c1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">M</span><span class="p">.</span><span class="n">col</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </pre></div>
 </div>
-<p>some changes …</p>
+<p>Lapack interface</p>
+<p>Vector BLAS-1 routine example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">Vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="mi">5</span><span class="p">),</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">5</span><span class="p">);</span>
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">x</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">x</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="n">addVectorLapack</span><span class="p">(</span><span class="mf">2.0</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>Matrix-Matrix multiplication BLAS-3 routine example:</p>
+<p>either by direct call:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;lapack_interface.hpp&gt;</span>
+
+<span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">RowMajor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">RowMajor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">multMatMatLapack</span><span class="p">(</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">);</span><span class="w">   </span>
+</pre></div>
+</div>
+<p>or by syntactic sugar using | Lapack with expression templates:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;matexpr.hpp&gt;</span>
+
+<span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">RowMajor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span><span class="w"> </span><span class="n">C</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+<span class="n">MatrixView</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="n">RowMajor</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Av</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">Bv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">Cv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">C</span><span class="p">;</span>
+<span class="n">Cv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">Av</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Bv</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Lapack</span><span class="p">;</span>
+</pre></div>
+</div>
+</section>
+<section id="use-the-libary-from-python">
+<h2>Use the libary from Python<a class="headerlink" href="#use-the-libary-from-python" title="Link to this heading">#</a></h2>
+<p>You can also use ASC-bla from Python. After building the library with cmake, go to the <code class="docutils literal notranslate"><span class="pre">python</span></code> subdirectory and install the python package with</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install .
+</pre></div>
+</div>
+<p>Another, more user friendly way with no need to build from source is to install directly from the git repository:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>pip install git+https://github.com/cathbl08/CSE-blabla.git@main
+</pre></div>
+</div>
+<p>Then you can use the library from Python:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">ASCsoft.bla</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ASCsoft.bla</span><span class="w"> </span><span class="kn">import</span> <span class="n">Matrix</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ASCsoft.bla</span><span class="w"> </span><span class="kn">import</span> <span class="n">matmul_lapack</span>
+</pre></div>
+</div>
+<p>with the use of expression templates you can:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+<span class="n">y</span> <span class="o">=</span> <span class="mf">5.0</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">y</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;z =&quot;</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>both the addition and the scalar multiplication are done efficiently without temporary objects and there is no need for explicit loops in your code</p>
+<p>similarly with matrices:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">m1</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">m1</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span>
+<span class="n">m2</span> <span class="o">=</span> <span class="mf">3.7</span>
+<span class="n">matmul</span> <span class="o">=</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">m2</span>
+</pre></div>
+</div>
+<p>you only need to write the loops for initialization, the matrix multiplication is perform with efficient memory access</p>
+<p>Another way to compute matrix-matrix products is to use the LAPACK interface:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">A</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Matrix</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">i</span> <span class="o">+</span> <span class="mf">0.25</span><span class="o">*</span><span class="n">j</span>
+        <span class="n">B</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span><span class="o">*</span><span class="n">i</span> <span class="o">-</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">j</span>
+
+<span class="c1"># Expression-template </span>
+<span class="n">C_et</span> <span class="o">=</span> <span class="n">A</span> <span class="o">*</span> <span class="n">B</span>
+
+<span class="c1"># LAPACK </span>
+<span class="n">C_la</span> <span class="o">=</span> <span class="n">matmul_lapack</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Performance benchmark can be found in the <code class="docutils literal notranslate"><span class="pre">py_demos</span></code> folder.</p>
 </section>
 </section>
 
@@ -469,9 +570,16 @@ default is row-major.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Welcome to ASC-bla’s documentation!</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#hello-from-group-cse-blabla">Hello from Group CSE-blabla!</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-asc-bla">Using ASC-bla</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-the-libary-from-python">Use the libary from Python</a></li>
 </ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>
@@ -485,7 +593,7 @@ default is row-major.</p>
   <div class="footer-item">
     
 <p class="component-author">
-By J. Schöberl
+By J. Schöberl & CSE students
 </p>
 
   </div>
