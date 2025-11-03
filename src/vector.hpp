@@ -5,7 +5,7 @@
 #include <iostream>
 #include <complex>
 #include "vecexpr.hpp"
-
+#include "math.h"
 template <typename TA, typename TB>
 // capture the result type of the addition of two vectors (this allows for addition/subtraction of complex and real vectors)
 using TRES = decltype(std::declval<TA>() + std::declval<TB>());
@@ -73,6 +73,13 @@ namespace ASC_bla
     auto slice(size_t first, size_t slice) const {
       return VectorView<T,size_t> (m_size/slice, m_dist*slice, m_data+first*m_dist);
     }
+
+    T norm() const {
+      T sum = 0;
+      for (size_t i = 0; i < m_size; i++)
+        sum += m_data[i]*m_data[i];
+      return pow(sum, 0.5);
+    }
       
   };
   template <typename T>
@@ -124,6 +131,36 @@ namespace ASC_bla
       std::swap(m_size, v2.m_size);
       std::swap(m_data, v2.m_data);
       return *this;
+    }
+
+    // resize, to be expanded! As of now, basic functionality to remove entries
+    void resize(size_t new_size, const std::string& keep = "upper")
+    {
+      if (new_size == m_size) {
+        return;
+      }
+
+      T* new_data = new T[new_size]{};
+
+      size_t elements_to_copy = std::min(m_size, new_size);
+
+      if (keep == "upper")
+      {
+        for (size_t i = 0; i < elements_to_copy; ++i) {
+          new_data[i] = m_data[i];
+        }
+      }
+      else if (keep == "lower")
+      {
+        size_t old_start = m_size - elements_to_copy;
+        size_t new_start = new_size - elements_to_copy;
+        for (size_t i = 0; i < elements_to_copy; ++i) {
+          new_data[new_start + i] = m_data[old_start + i];
+        }
+      }
+      delete[] m_data;
+      m_data = new_data;
+      m_size = new_size;
     }
     
     // this function could be removed, as there exists an equivalent one in base class

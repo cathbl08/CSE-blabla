@@ -126,4 +126,31 @@ int main()
     std::cout << "---- mat*inv ?= I ---- " << std::endl;
     std::cout << mat * mat.inv() << std::endl;
     std::cout << std::endl;
+
+    //------------------------------------------------------------------------//
+
+    bla::Matrix<double> mat2(dim, dim);
+
+    for (size_t i = 0; i < dim; i++)
+        for (size_t j = 0; j < dim; j++)
+            mat2(i, j) = (i+1)*(j+1)*1.0/(i+j+1);
+
+    std::cout << "---- QR decomposition of mat2 ---- " << std::endl;
+    std::cout << "mat2 = " << std::endl;
+    std::cout << mat2 << std::endl;
+
+    auto [Q, R] = mat2.qr_decomp(); // gotta love auto!
+
+    std::cout << "Q = " << std::endl;
+    std::cout << Q << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "R = " << std::endl;
+    std::cout << R << std::endl;
+    std::cout << std::endl;
+
+    std::cout << "---- Q*R ?= mat2 ---- " << std::endl;
+    std::cout << "Q*R = " << std::endl;
+    std::cout << Q*R << std::endl;
+    
 }

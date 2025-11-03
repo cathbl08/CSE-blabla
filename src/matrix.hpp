@@ -2,10 +2,11 @@
 #ifndef FILE_MATRIX
 #define FILE_MATRIX
 
+#include <string>
+#include <algorithm>
 #include <iostream>
 #include <vector.hpp>
 #include "matexpr.hpp"
-
 
 // we need a matrix from matrix expression that call matrix view for that we need a constructor 
 namespace ASC_bla
@@ -236,6 +237,54 @@ namespace ASC_bla
       return *this;
     }
 
+    // resize matrix, to be expanded! As of now, basic functionality to remove rows/cols
+    void resize(size_t new_rows, size_t new_cols, const std::string& keep = "upper left")
+    {
+      if (new_rows == m_rows && new_cols == m_cols) {
+        return;
+      }
+
+      T* new_data = new T[new_rows * new_cols]{};
+      size_t new_dist = (ORD == RowMajor) ? new_cols : new_rows;
+
+      size_t rows_to_copy = std::min(m_rows, new_rows);
+      size_t cols_to_copy = std::min(m_cols, new_cols);
+
+      if (keep == "upper left")
+      {
+        for (size_t i = 0; i < rows_to_copy; ++i) {
+          for (size_t j = 0; j < cols_to_copy; ++j) {
+            if constexpr (ORD == RowMajor)
+              new_data[i * new_dist + j] = (*this)(i, j);
+            else // ColMajor
+              new_data[i + j * new_dist] = (*this)(i, j);
+          }
+        }
+      }
+      else if (keep == "lower right")
+      {
+        size_t old_row_start = m_rows - rows_to_copy;
+        size_t old_col_start = m_cols - cols_to_copy;
+        size_t new_row_start = new_rows - rows_to_copy;
+        size_t new_col_start = new_cols - cols_to_copy;
+
+        for (size_t i = 0; i < rows_to_copy; ++i) {
+          for (size_t j = 0; j < cols_to_copy; ++j) {
+            if constexpr (ORD == RowMajor)
+              new_data[(new_row_start + i) * new_dist + (new_col_start + j)] = (*this)(old_row_start + i, old_col_start + j);
+            else // ColMajor
+              new_data[(new_row_start + i) + (new_col_start + j) * new_dist] = (*this)(old_row_start + i, old_col_start + j);
+          }
+        }
+      }
+
+      delete[] m_data;
+      m_data = new_data;
+      m_rows = new_rows;
+      m_cols = new_cols;
+      m_dist = new_dist;
+    }
+
     // matrix inverse using Gauss-Jordan: [A,I] -> [I, A^-1]
     Matrix inv() const {
       if (m_rows != m_cols){
@@ -290,6 +339,67 @@ namespace ASC_bla
           }
         return res;
       }
+    }
+
+    // helper for QR decompositon
+    static int signum(double x) {
+        return (0.0 < x) - (x < 0.0);
+    }
+
+    std::tuple<Matrix<T, ORD>, Matrix<T, ORD>> qr_decomp(){
+    // Matrix qr_decomp()
+    // {
+      
+      int m = this->rows();
+      int n = this->cols();
+        
+      Matrix<T, ORD> Q(m,m), Ak(m, n), R(m, n);
+      Ak = *this;
+
+      for (size_t k = 0; k < std::min(m,n); k++){
+
+        // std::cout << "-----------" << std::endl;
+        // std::cout << "iteration " << k << std::endl;
+        
+        // if (k == 0){
+        Matrix<T, ORD> Hk(Ak.rows(), Ak.rows()), Ik(Ak.rows()), vk_tp(1, Ak.rows());
+        Vector<T> tmp_vk = Ak.col(0);
+        double norm_val = tmp_vk.norm();
+        
+        // std::cout << "xk = " << tmp_vk << std::endl;
+        
+        tmp_vk = tmp_vk + signum(tmp_vk(0))*norm_val*Ik.col(0);
+        norm_val = pow(tmp_vk.norm(),2); // new value
+
+        // std::cout << "vk = " << tmp_vk << std::endl;
+        
+        auto factor = -2.0/norm_val;
+
+        Matrix<T, ORD> vk(tmp_vk); // Matrix(Vector)
+        vk_tp = vk.transpose();
+
+        // std::cout << "vk = " << vk << std::endl;
+
+        Hk = Ik + (factor * (vk * vk_tp));
+        // std::cout << "Hk = " << std::endl;
+        // std::cout << Hk << std::endl;
+        // std::cout << std::endl;
+        // std::cout << "factor = " << std::endl;
+        // std::cout << factor << std::endl;
+
+        Ak = Hk*Ak;
+        std::cout << "Ak = " << Ak << std::endl;
+
+        for (size_t j = 0; j < Ak.cols(); j++){
+          R(k, k+j) = Ak(0, j);
+        }
+        // For the next iteration, work on the lower-right submatrix
+        Ak.resize(Ak.rows()-1, Ak.cols()-1, "lower right");
+        // std::cout << "---------------" << std::endl;
+        // std::cout << "Ak = " << Ak << std::endl;
+      }
+      Q = *this*R.inv();
+      return {Q, R};
     }
 
     // assignment operator (move)

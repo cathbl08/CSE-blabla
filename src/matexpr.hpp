@@ -39,7 +39,7 @@ namespace ASC_bla
   template <typename TA, typename TB>
   auto operator+ (const MatExpr<TA> & A, const MatExpr<TB> & B)
   {
-    assert (A.rows() == B.rows()) && (A.cols() == B.cols());
+    assert((A.rows() == B.rows()) && (A.cols() == B.cols()));
     return SumMatExpr(A.derived(), B.derived());
   }
 
