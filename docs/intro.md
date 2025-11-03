@@ -51,7 +51,7 @@ All objects are implemented in the namespace ASC_bla. To use them with less typi
 
     namespace bla = ASC_bla;
 
-or even
+or
     
     using namespace ASC_bla;
 
@@ -77,15 +77,48 @@ Matrix<double,RowMajor> m1(5,3), m2(3,3);
 for (int i = 0; i < m1.Height(); i++)
   for (int j = 0; j < m1.Width(); j++)
     m1(i,j) = i+j;
-m2 = 3.7;
+m2 = 3.
 Matrix product = m1 * m2;
 ```
 
 You can extract a row or a column from a matrix:
 
 ```cpp
-Vector col1 = product.Col(1);
+auto r2 = M.row(2);   
+auto c1 = M.col(1);
 ```
+
+Lapack interface
+
+Vector BLAS-1 routine example:
+
+```cpp
+Vector<double> x(5), y(5);
+for (size_t i = 0; i < x.size(); i++) { x(i) = i; y(i) = 2; }
+addVectorLapack(2.0, x, y);
+``` 
+Matrix-Matrix multiplication BLAS-3 routine example:
+
+either by direct call:
+
+```cpp
+#include <lapack_interface.hpp>
+
+Matrix<double, RowMajor> A(2,3), B(3,2);
+Matrix<double, RowMajor> C(2,2);
+multMatMatLapack(A, B, C);   
+``` 
+or by syntactic sugar using | Lapack with expression templates:
+
+```cpp
+#include <matexpr.hpp>
+
+Matrix<double, RowMajor> A(2,3), B(3,2), C(2,2);
+MatrixView<double, RowMajor> Av = A, Bv = B, Cv = C;
+Cv = (Av * Bv) | Lapack;
+``` 
+
+
 
 ## Use the libary from Python
 
@@ -102,6 +135,7 @@ Then you can use the library from Python:
 ```python
 from ASCsoft.bla import Vector
 from ASCsoft.bla import Matrix
+from ASCsoft.bla import matmul_lapack
 ```
 
 with the use of expression templates you can:
@@ -135,8 +169,22 @@ you only need to write the loops for initialization, the matrix multiplication i
 Another way to compute matrix-matrix products is to use the LAPACK interface:
 
 ```python
-# don't have it yet
+n = 4
+A = Matrix(n, n)
+B = Matrix(n, n)
+for i in range(n):
+    for j in range(n):
+        A[i, j] = 0.5*i + 0.25*j
+        B[i, j] = 0.2*i - 0.1*j
+
+# Expression-template 
+C_et = A * B
+
+# LAPACK 
+C_la = matmul_lapack(A, B)
 ```
+
+Performance benchmark can be found in the `py_demos` folder.
 
 
 
