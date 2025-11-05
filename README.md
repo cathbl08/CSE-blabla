@@ -1,8 +1,7 @@
 # ASC-bla
 A simple basic linear algebra implementation using modern C++.
 
-confirm link below works?
-Read the [Documentation](https://cathbl08.github.io/CSE-blabla/intro.html)
+Read the [Documentation](https://cathbl08.github.io/CSE-blabla/)
 
 
 Telling the truth: CSE-blabla is not really a complete library,
