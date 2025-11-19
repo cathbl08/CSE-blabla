@@ -6,14 +6,17 @@
 #include <algorithm>
 #include <iostream>
 #include <vector.hpp>
+#include "ordering.hpp"
+#include "tile.hpp"
 #include "matexpr.hpp"
 
 // we need a matrix from matrix expression that call matrix view for that we need a constructor 
 namespace ASC_bla
 {
-  enum ORDERING { ColMajor, RowMajor };
-
-// starting with MatrixView class
+  // Forward-declare Tile to break circular dependency
+  template <typename T, size_t H, size_t W, ORDERING ORD> class Tile;
+  
+  // starting with MatrixView class
   template <typename T, ORDERING ORD=RowMajor, typename TDIST=std::integral_constant<size_t,1>>
   class MatrixView : public MatExpr<MatrixView<T,ORD, TDIST>>
   {
@@ -132,6 +135,20 @@ namespace ASC_bla
       }
       return *this;
     }
+
+    template <size_t H, size_t W, ORDERING ORD_TILE>
+    auto GetTile(size_t i, size_t j) const
+    {
+      return Tile<T, H, W, ORD_TILE>(*this, i, j);
+    }
+
+    template <size_t H, size_t W, ORDERING ORD_TILE>
+    constexpr double EstimateCosts() const
+    {
+      if constexpr (ORD == ORD_TILE) return H; // H vector loads
+      else return H*W; // H*W scalar loads
+    }
+
 
     // matrix transpose
     auto transpose()

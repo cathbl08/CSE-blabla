@@ -17,6 +17,7 @@ endif()
 
 
 include_directories(src)
+include_directories(Fast-CSErious/src)
 
 find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 
@@ -65,6 +66,14 @@ install (TARGETS bla DESTINATION ASCsoft)
 install (FILES src/vector.hpp DESTINATION ASCsoft/include)
 
 
+
+include_directories(src)
+include_directories(Fast-CSErious/src)
+
+find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+
+
+
 # Copy openblas dll file to build directory (no need to set PATH)
 if(WIN32)
     add_custom_command(TARGET test_lapack POST_BUILD
@@ -73,4 +82,3 @@ if(WIN32)
       $<TARGET_FILE_DIR:test_lapack>
     )
 endif()
-

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "vecexpr.hpp"
+#include "tile.hpp"
 
 namespace ASC_bla
 {
@@ -20,6 +21,18 @@ namespace ASC_bla
     size_t rows() const { return derived().rows(); }
     size_t cols() const { return derived().cols(); }
     auto operator() (size_t i, size_t j) const { return derived()(i,j); }
+
+    template <size_t H, size_t W, ORDERING ORD>
+    auto GetTile(size_t i, size_t j) const
+    {
+      return derived().template GetTile<H, W, ORD>(i, j);
+    }
+
+    template <size_t H, size_t W, ORDERING ORD>
+    constexpr double EstimateCosts() const
+    {
+      return derived().template EstimateCosts<H, W, ORD>();
+    }
   };
   
  // ***************** Sum of two matrices *****************
@@ -34,6 +47,18 @@ namespace ASC_bla
     auto operator() (size_t i, size_t j) const { return A(i,j)+B(i,j); }
     size_t rows() const { return A.rows(); }
     size_t cols() const { return A.cols(); }      
+
+    template <size_t H, size_t W, ORDERING ORD>
+    auto GetTile(size_t i, size_t j) const
+    {
+      return A.template GetTile<H, W, ORD>(i, j) + B.template GetTile<H, W, ORD>(i, j);
+    }
+
+    template <size_t H, size_t W, ORDERING ORD>
+    constexpr double EstimateCosts() const
+    {
+      return A.template EstimateCosts<H, W, ORD>() + B.template EstimateCosts<H, W, ORD>() + H * W;
+    }
   };
   
   template <typename TA, typename TB>
@@ -56,6 +81,18 @@ namespace ASC_bla
     auto operator() (size_t i, size_t j) const { return scal*mat(i,j); }
     size_t rows() const { return mat.rows(); }
     size_t cols() const { return mat.cols(); }      
+
+    template <size_t H, size_t W, ORDERING ORD>
+    auto GetTile(size_t i, size_t j) const
+    {
+      return scal * mat.template GetTile<H, W, ORD>(i, j);
+    }
+
+    template <size_t H, size_t W, ORDERING ORD>
+    constexpr double EstimateCosts() const
+    {
+      return mat.template EstimateCosts<H, W, ORD>() + H * W;
+    }
   };
   
   // template <typename S, typename TM>
@@ -109,6 +146,26 @@ namespace ASC_bla
   
     size_t rows() const { return A.rows(); }
     size_t cols() const { return B.cols(); } 
+
+    template <size_t H, size_t W, ORDERING ORD>
+    auto GetTile(size_t i, size_t j) const
+    {
+      // This is a simplified placeholder. A real implementation would
+      // require tiled matrix multiplication logic here.
+      // For now, we fall back to scalar evaluation to build the tile.
+      std::array<typename std::invoke_result<decltype(*this), size_t, size_t>::type, H*W> data;
+      for(size_t row=0; row<H; ++row)
+          for(size_t col=0; col<W; ++col)
+              data[row*W+col] = (*this)(i+row, j+col);
+      return Tile<typename std::invoke_result<decltype(*this), size_t, size_t>::type, H, W, RowMajor>(data.data());
+    }
+
+    template <size_t H, size_t W, ORDERING ORD>
+    constexpr double EstimateCosts() const
+    {
+      // Cost of one tile is H*W*(2*A.cols-1) flops
+      return A.template EstimateCosts<H, W, ORD>() + B.template EstimateCosts<H, W, ORD>() + H * W * (2 * A.cols());
+    }
   };
 
   template <typename TA, typename TB>
