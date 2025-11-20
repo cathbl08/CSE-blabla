@@ -9,11 +9,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(Catch2)
 
 
-add_executable (tests_vector tests_vector.cpp)
-target_sources (tests_vector PUBLIC ../src/vector.hpp ../src/vecexpr.hpp)
+add_executable (tests_vector tests_vector.cpp tests_matrix.cpp)
+target_sources (tests_vector PUBLIC ../src/vector.hpp ../src/vecexpr.hpp ../src/matrix.hpp ../src/matexpr.hpp)
 
 target_link_libraries(tests_vector Catch2::Catch2WithMain)
 
 
 
 add_test(NAME catchtest COMMAND tests_vector)
+
