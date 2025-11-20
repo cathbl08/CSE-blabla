@@ -82,3 +82,8 @@ if(WIN32)
       $<TARGET_FILE_DIR:test_lapack>
     )
 endif()
+
+
+include(CTest)
+enable_testing()
+add_subdirectory(tests)
