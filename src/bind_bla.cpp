@@ -73,102 +73,83 @@ PYBIND11_MODULE(bla, m) {
       //MATRIX 
 
     py::class_<Matrix<double>> (m, "Matrix")
-      .def(py::init<size_t, size_t>(),
-           py::arg("rows"), py::arg("cols"), "create matrix of given size")
+    .def(py::init<size_t, size_t>(),
+         py::arg("rows"), py::arg("cols"), "create matrix of given size")
 
-
-      // .def("__len__", &Vector<double>::size,
-      //      "return size of vector")
-
-      .def_property_readonly("shape",
+    .def_property_readonly("shape",
       [](const Matrix<double, RowMajor>& self) {
            return std::tuple(self.rows(), self.cols());
       })
 
-
-      .def("__getitem__",
+    .def("__getitem__",
       [](Matrix<double, RowMajor> self, std::tuple<int, int> ind) {
            return self(std::get<0>(ind), std::get<1>(ind));
       })
-     
 
-
-      .def("__setitem__", [](Matrix<double> & self, py::tuple i, double m) {
+    .def("__setitem__", [](Matrix<double> & self, py::tuple i, double m) {
         if (i.size() != 2)
           throw py::index_error("matrix index must be a 2-tuple");
         size_t row = i[0].cast<size_t>();
         size_t col = i[1].cast<size_t>();
         self(row, col) = m;
-      })
+    })
 
-      // .def("__setitem__", [](Vector<double> & self, int i, double v) {
-      //   if (i < 0) i += self.size();
-      //   if (i < 0 || i >= self.size()) throw py::index_error("vector index out of range");
-      //   self(i) = v;
-      // })
-
-
-      .def("__getitem__", [](Matrix<double> & self, int row, int col) { return self(row,col); })
-      
-
-      //TO BE DONE FOR MATRIX SLICING 
-
-      // .def("__setitem__", [](Vector<double> & self, py::slice inds, double val)
-      // {
-      //   size_t start, stop, step, n;
-      //   if (!inds.compute(self.size(), &start, &stop, &step, &n))
-      //     throw py::error_already_set();
-      //   self.range(start, stop).slice(0,step) = val;
-      // })
-      
-      .def("__add__", [](Matrix<double> & self, Matrix<double> & other)
+    .def("__add__", [](Matrix<double> & self, Matrix<double> & other)
       { return Matrix<double> (self+other); })
 
-
-      //this doesnt work / make sense
-      .def("__rmul__", [](Matrix<double> & self, double scal)
+    // scalar * Matrix and Matrix * scalar still fine:
+    .def("__rmul__", [](Matrix<double> & self, double scal)
       { return Matrix<double, RowMajor> (scal * self); })
 
-      .def("__mul__", [](Matrix<double> & self, double scal)
-      { return Matrix<double, RowMajor> (scal * self); })
-    
-      // .def("__mul__", [](Matrix<double> & self, double scal)
-      // { return ScaleMatExpr<double, MatrixView<double>> (scal*self); })
+    .def("__mul__", [](Matrix<double> & self, double scal)
+      { return Matrix<double, RowMajor> (self * scal); })
 
+    // ------- THIS is the important change: Matrix * Matrix via ET -------
+    .def("__mul__", [](const Matrix<double>& A, const Matrix<double>& B) {
+        if (A.cols() != B.rows())
+            throw std::runtime_error("Incompatible shapes");
 
-      .def("__mul__", [](const Matrix<double>& A, const Matrix<double>& B) {
-            return A * B;  
-        })
+        Matrix<double> C(A.rows(), B.cols());
 
-      .def("__matmul__", [](const Matrix<double>& A, const Matrix<double>& B) {
-            return A * B;
-        })
-      
-      .def("__str__", [](const Matrix<double> & self)
+        // Views (these inherit from MatExpr, so Av*Bv builds MultMatExpr)
+        MatrixView<double> Cv = C;
+        MatrixView<double> Av = const_cast<Matrix<double>&>(A);
+        MatrixView<double> Bv = const_cast<Matrix<double>&>(B);
+
+        Cv = Av * Bv;   // <- expression templates used here
+        return C;
+    })
+
+    .def("__matmul__", [](const Matrix<double>& A, const Matrix<double>& B) {
+        // you can choose: either call A*B again, or use LAPACK here, etc.
+        return A * B;
+    })
+
+    .def("__str__", [](const Matrix<double> & self)
       {
         std::stringstream str;
         str << self;
         return str.str();
       })
 
-     .def(py::pickle(
-        [](Matrix<double> & self) { // __getstate__
-            /* return a tuple that fully encodes the state of the object */
+    .def(py::pickle(
+        [](Matrix<double> & self) {
           return py::make_tuple(self.rows(), self.cols(),
-                                py::bytes((char*)(void*)&self(0, 0), self.rows()*self.cols()*sizeof(double)));
+                                py::bytes((char*)(void*)&self(0, 0),
+                                          self.rows()*self.cols()*sizeof(double)));
         },
-        [](py::tuple t) { // __setstate__
+        [](py::tuple t) {
           if (t.size() != 2)
             throw std::runtime_error("should be a 2-tuple!");
 
           Matrix<double> m(t[0].cast<size_t>());
           py::bytes mem = t[1].cast<py::bytes>();
-          std::memcpy(&m(0, 0), PYBIND11_BYTES_AS_STRING(mem.ptr()), m.rows()*m.cols()*sizeof(double));
+          std::memcpy(&m(0, 0), PYBIND11_BYTES_AS_STRING(mem.ptr()),
+                      m.rows()*m.cols()*sizeof(double));
           return m;
         }))
-
-        
     ;
+
     m.def("matmul_lapack", [](const Matrix<double, RowMajor>& A,
                           const Matrix<double, RowMajor>& B)
     {
