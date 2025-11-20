@@ -119,54 +119,75 @@ namespace ASC_bla
   // ***************** Product of two matrices *****************
 
   template <typename TA, typename TB>
-  class MultMatExpr : public MatExpr<MultMatExpr<TA,TB>>
-  {
-    
+class MultMatExpr : public MatExpr<MultMatExpr<TA,TB>>
+{
     TA A;
     TB B;
 
-  public:
-
+public:
     const TA& left()  const { return A; }
     const TB& right() const { return B; }
 
-    MultMatExpr(TA _A, TB _B) : A(_A), B(_B){}
+    MultMatExpr(TA _A, TB _B) : A(_A), B(_B) {}
+
     auto operator() (size_t i, size_t j) const
     {
       using elemtypeA = typename std::invoke_result<TA, size_t, size_t>::type;
       using elemtypeB = typename std::invoke_result<TB, size_t, size_t>::type;
       using TSUM = decltype(std::declval<elemtypeA>() * std::declval<elemtypeB>());
 
-      TSUM multsum{};                         
+      TSUM multsum{};
       for (size_t k = 0; k < A.cols(); ++k)
         multsum += A(i,k) * B(k,j);
       return multsum;
     }
 
-  
     size_t rows() const { return A.rows(); }
-    size_t cols() const { return B.cols(); } 
+    size_t cols() const { return B.cols(); }
 
+    // -------- SIMD tile matmul: C_tile = A*B over [i0..i0+H), [j0..j0+W) --------
     template <size_t H, size_t W, ORDERING ORD>
-    auto GetTile(size_t i, size_t j) const
+    auto GetTile(size_t i0, size_t j0) const
     {
-      // This is a simplified placeholder. A real implementation would
-      // require tiled matrix multiplication logic here.
-      // For now, we fall back to scalar evaluation to build the tile.
-      std::array<typename std::invoke_result<decltype(*this), size_t, size_t>::type, H*W> data;
-      for(size_t row=0; row<H; ++row)
-          for(size_t col=0; col<W; ++col)
-              data[row*W+col] = (*this)(i+row, j+col);
-      return Tile<typename std::invoke_result<decltype(*this), size_t, size_t>::type, H, W, RowMajor>(data.data());
+      using T = typename std::invoke_result<decltype(*this), size_t, size_t>::type;
+      static_assert(ORD == RowMajor,
+                    "MultMatExpr::GetTile currently implemented only for RowMajor tiles");
+
+      Tile<T, H, W, RowMajor> Ctile;
+
+      for (size_t h = 0; h < H; ++h)
+      {
+        // C(i0+h, j0..j0+W-1) in one SIMD
+        SIMD<T, W> acc(T(0));   // broadcast 0 into all lanes
+
+        for (size_t k = 0; k < A.cols(); ++k)
+        {
+          T aik = A(i0 + h, k);   // scalar from row of A
+
+          // load one row-segment of B into SIMD: B(k, j0..j0+W-1)
+          std::array<T, W> buf;
+          for (size_t w = 0; w < W; ++w)
+            buf[w] = B(k, j0 + w);
+
+          SIMD<T, W> bvec(buf.data());   // SIMD load from small buffer
+          acc += aik * bvec;             // scalar * SIMD + SIMD
+        }
+
+        Ctile.regs[h] = acc;
+      }
+
+      return Ctile;
     }
 
     template <size_t H, size_t W, ORDERING ORD>
     constexpr double EstimateCosts() const
     {
-      // Cost of one tile is H*W*(2*A.cols-1) flops
-      return A.template EstimateCosts<H, W, ORD>() + B.template EstimateCosts<H, W, ORD>() + H * W * (2 * A.cols());
+      // rough cost model: flops for tile + subexpr costs
+      return A.template EstimateCosts<H, W, ORD>()
+           + B.template EstimateCosts<H, W, ORD>()
+           + H * W * (2.0 * A.cols());
     }
-  };
+};
 
   template <typename TA, typename TB>
   auto operator* (const MatExpr<TA>& A, const MatExpr<TB>& B)

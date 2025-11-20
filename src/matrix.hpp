@@ -117,38 +117,107 @@ namespace ASC_bla
         return MatrixView<T, ORD, size_t>(m_rows, range, m_dist, &m_data[first]);
     }
 
-    // assignment operator but from MatExpr
-    template <typename TB>
-    MatrixView & operator= (const MatExpr<TB> & A)
-    {
-      assert ((m_rows == A.rows()) && (m_cols == A.cols()));
-      if constexpr (ORD == RowMajor){
-        for (size_t i = 0; i < m_rows; i++)
-          for (size_t j = 0; j < m_cols; j++)
-            m_data[i * m_dist + j] = A(i,j);
-        
-      }
-      else{
-        for (size_t j = 0; j < m_cols; ++j)
-          for (size_t i = 0; i < m_rows; ++i)
-            m_data[i + j * m_dist] = A(i,j);
-      }
-      return *this;
-    }
+    // --- Tile-based interface for expression templates ---
 
     template <size_t H, size_t W, ORDERING ORD_TILE>
     auto GetTile(size_t i, size_t j) const
     {
+      // Delegate to Tile loader: it uses SIMD under the hood
       return Tile<T, H, W, ORD_TILE>(*this, i, j);
     }
 
     template <size_t H, size_t W, ORDERING ORD_TILE>
     constexpr double EstimateCosts() const
     {
-      if constexpr (ORD == ORD_TILE) return H; // H vector loads
-      else return H*W; // H*W scalar loads
+      // Simple heuristic: matching ordering is cheap, otherwise more scalar work
+      if constexpr (ORD == ORD_TILE)
+        return H;      // H SIMD rows
+      else
+        return H * W;  // H*W scalar loads/gathers
     }
 
+// // when simd  available
+
+    // assignment operator but from MatExpr
+    template <typename TB>
+MatrixView& operator=(const MatExpr<TB>& expr)
+{
+  assert(m_rows == expr.rows() && m_cols == expr.cols());
+
+  // -------- SIMD tile path: RowMajor + double --------
+  if constexpr (ORD == RowMajor && std::is_same_v<T,double>)
+  {
+    std::cout << "MatrixView::operator= using SIMD tiles\n";
+
+    // Determine SIMD width from ASC_HPC
+    constexpr size_t bytes = ASC_HPC::DefaultSimdSizeBytes;
+    constexpr size_t W = bytes / sizeof(T);   // columns per SIMD
+    constexpr size_t H = 4;                   // rows per tile (you can tune)
+
+    size_t i = 0;
+    for (; i + H <= m_rows; i += H)
+    {
+      size_t j = 0;
+      for (; j + W <= m_cols; j += W)
+      {
+        // Ask the expression for a SIMD tile and store it into this MatrixView
+        auto tile = expr.template GetTile<H, W, RowMajor>(i, j);
+        tile.Store(*this, i, j);
+      }
+      // tail in j (scalar)
+      for (; j < m_cols; ++j)
+        for (size_t hh = 0; hh < H; ++hh)
+          (*this)(i + hh, j) = expr(i + hh, j);
+    }
+
+    // tail in i (scalar)
+    for (; i < m_rows; ++i)
+      for (size_t j = 0; j < m_cols; ++j)
+        (*this)(i, j) = expr(i, j);
+
+    return *this;
+  }
+  else
+  {
+    // -------- Fallback: pure scalar evaluation --------
+    if constexpr (ORD == RowMajor)
+    {
+      for (size_t i = 0; i < m_rows; ++i)
+        for (size_t j = 0; j < m_cols; ++j)
+          m_data[i * m_dist + j] = expr(i,j);
+    }
+    else
+    {
+      for (size_t j = 0; j < m_cols; ++j)
+        for (size_t i = 0; i < m_rows; ++i)
+          m_data[i + j * m_dist] = expr(i,j);
+    }
+    return *this;
+  }
+}
+
+
+// // when simd not available
+// template <typename TB>
+// MatrixView& operator=(const MatExpr<TB>& expr)
+// {
+//   assert(m_rows == expr.rows() && m_cols == expr.cols());
+
+//   // Pure scalar evaluation, no SIMD tiles:
+//   if constexpr (ORD == RowMajor)
+//   {
+//     for (size_t i = 0; i < m_rows; ++i)
+//       for (size_t j = 0; j < m_cols; ++j)
+//         m_data[i * m_dist + j] = expr(i,j);
+//   }
+//   else
+//   {
+//     for (size_t j = 0; j < m_cols; ++j)
+//       for (size_t i = 0; i < m_rows; ++i)
+//         m_data[i + j * m_dist] = expr(i,j);
+//   }
+//   return *this;
+// }
 
     // matrix transpose
     auto transpose()
