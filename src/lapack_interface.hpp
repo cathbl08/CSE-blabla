@@ -98,27 +98,27 @@ namespace ASC_bla
   // // }
   
   template <ORDERING OA, ORDERING OB>
-  void multMatMatLapack(MatrixView<double, OA> a,
-                        MatrixView<double, OB> b,
-                        MatrixView<double, ColMajor> c)
-  {
-      char transa = (OA == ColMajor) ? 'N' : 'T';
-      char transb = (OB == ColMajor) ? 'N' : 'T';
+void multMatMatLapack(MatrixView<double, OA> a,
+                      MatrixView<double, OB> b,
+                      MatrixView<double, ColMajor> c)
+{
+    char transa = (OA == ColMajor) ? 'N' : 'T';
+    char transb = (OB == ColMajor) ? 'N' : 'T';
 
-      integer m = static_cast<integer>(c.rows()); // dimensions of C 
-      integer n = static_cast<integer>(c.cols()); 
-      integer k = static_cast<integer>(a.cols());   // NOT a.dist() ? must match inner dim not stride
+    integer m = static_cast<integer>(c.rows());
+    integer n = static_cast<integer>(c.cols());
+    integer k = static_cast<integer>(a.cols());
 
-      double alpha = 1.0, beta = 0.0;
-      integer lda = static_cast<integer>(std::max<size_t>(1, a.dist()));
-      integer ldb = static_cast<integer>(std::max<size_t>(1, b.dist()));
-      integer ldc = static_cast<integer>(std::max<size_t>(1, c.dist()));
+    double alpha = 1.0, beta = 0.0;
+    integer lda = static_cast<integer>(std::max<size_t>(1, a.dist()));
+    integer ldb = static_cast<integer>(std::max<size_t>(1, b.dist()));
+    integer ldc = static_cast<integer>(std::max<size_t>(1, c.dist()));
 
-      int err = dgemm_(&transa, &transb, &m, &n, &k,
-                      &alpha, a.data(), &lda, b.data(), &ldb,
-                      &beta,  c.data(), &ldc);
-      if (err) throw std::runtime_error("Lapack dgemm error " + std::to_string(err));
-  }
+    dgemm_(&transa, &transb, &m, &n, &k,
+           &alpha, a.data(), &lda, b.data(), &ldb,
+           &beta,  c.data(), &ldc);
+    // no error check: dgemm_ does not set an info code
+}
 
   template <ORDERING OA, ORDERING OB>
   void multMatMatLapack(MatrixView<double, OA> a,
