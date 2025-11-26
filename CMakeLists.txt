@@ -87,3 +87,13 @@ endif()
 include(CTest)
 enable_testing()
 add_subdirectory(tests)
+
+
+
+set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+
+find_package(OpenMP REQUIRED)
+if (OpenMP_CXX_FOUND)
+  target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
+endif()
