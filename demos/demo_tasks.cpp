@@ -16,9 +16,11 @@ using namespace ASC_bla;
 
 int main()
 {
+  // initialize the trace timeline
   timeline = std::make_unique<TimeLine>("demo.trace");
-
+  // start working threads (3 workers + main thread)
   StartWorkers(3);
+  
   
   RunParallel(10, [] (int i, int size)
   {
@@ -92,7 +94,7 @@ int main()
     });
   });
 
-  // use RunParallel for Matrix-Matrix multiplication
+  // use RunParallel for Matrix-Matrix multiplication task
   // matrix size
   const size_t N = 500;
   // use 4 tasks (3 workers and 1 main)
@@ -112,13 +114,16 @@ int main()
     }
 
   // timer for the entire parallel matrix multiplication
+  // start timer
   static Timer t_matmul("parallel matrix multiplication", {10,0,0});
   RegionTimer reg_matmul(t_matmul);
 
   // use RunParallel to perform matrix multiplication C = A * B
+  // work is split into num_tasks independent tasks
   RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size)
   {
     // determine the range of rows for this task
+    // and ensure all rows are covered
     size_t first = (N * task_id) / size;
     size_t next = (N * (task_id + 1)) / size;
 
@@ -133,6 +138,7 @@ int main()
         C(i,j) = sum;
       }
     */
+   // perform computation for the row block
    C.rows(first, next) = A.rows(first, next) * B;
   });
 
