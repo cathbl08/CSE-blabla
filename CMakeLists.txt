@@ -1,4 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
+
+# added
+set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+
 project(ASC_bla)
 
 # Set default CMAKE_BUILD_TYPE to RelWithDebInfo if not specified
@@ -10,10 +15,12 @@ endif()
 # C++17 required for constexpr if
 set (CMAKE_CXX_STANDARD 17)
 
+
+
 # Set default CMAKE\_BUILD\_TYPE to RelWithDebInfo if not specified
-if(NOT CMAKE\_BUILD\_TYPE)
-  set(CMAKE\_BUILD\_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build." FORCE)
-endif()
+# if(NOT CMAKE\_BUILD\_TYPE)
+#   set(CMAKE\_BUILD\_TYPE "RelWithDebInfo" CACHE STRING "Choose the type of build." FORCE)
+# endif()
 
 
 include_directories(src)
@@ -47,6 +54,10 @@ endif()
 
 
 find_package(LAPACK REQUIRED)
+
+# added
+find_package(OpenMP REQUIRED)
+
 add_executable (test_lapack demos/test_lapack.cpp)
 target_link_libraries (test_lapack PUBLIC LAPACK::LAPACK)
 
@@ -67,10 +78,10 @@ install (FILES src/vector.hpp DESTINATION ASCsoft/include)
 
 
 
-include_directories(src)
-include_directories(Fast-CSErious/src)
+# include_directories(src)
+# include_directories(Fast-CSErious/src)
 
-find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
+# find_package(Python 3.8 COMPONENTS Interpreter Development REQUIRED)
 
 
 
@@ -90,10 +101,10 @@ add_subdirectory(tests)
 
 
 
-set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
-set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
+# set(CMAKE_C_COMPILER "/opt/homebrew/opt/llvm/bin/clang")
+# set(CMAKE_CXX_COMPILER "/opt/homebrew/opt/llvm/bin/clang++")
 
-find_package(OpenMP REQUIRED)
-if (OpenMP_CXX_FOUND)
-  target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
-endif()
+# find_package(OpenMP REQUIRED)
+# if (OpenMP_CXX_FOUND)
+#   target_link_libraries(${PROJECT_NAME} OpenMP::OpenMP_CXX)
+# endif()
