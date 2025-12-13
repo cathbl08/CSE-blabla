@@ -24,7 +24,7 @@ int main()
   // StartWorkers(0);
   
   
-  RunParallel(10, [] (int i, int size)
+  /*RunParallel(10, [] (int i, int size)
   {
     static Timer t("timer one");
     RegionTimer reg(t);
@@ -94,17 +94,18 @@ int main()
     {
       ;
     });
-  });
-
+  });*/
+  
   // use RunParallel for Matrix-Matrix multiplication task
   // matrix size
   const size_t N = 500;
   // const size_t N = 2000;
   // const size_t N = 4000;
   // use 4 tasks (3 workers and 1 main)
-  const size_t num_tasks = 4;
+  // const size_t num_tasks = 4;
   // const size_t num_tasks = 8;
   // const size_t num_tasks = 1;
+  const size_t num_tasks = 16;
   // const size_t num_tasks = 64;
 
   // define matrices A, B and C
@@ -122,21 +123,26 @@ int main()
 
   // timer for the entire parallel matrix multiplication
   // start timer
-  static Timer t_matmul("parallel matrix multiplication", {10,0,0});
-  RegionTimer reg_matmul(t_matmul);
+  // static Timer t_matmul("parallel matrix multiplication", {10,0,0});
+  // RegionTimer reg_matmul(t_matmul);
 
   // use RunParallel to perform matrix multiplication C = A * B
   // work is split into num_tasks independent tasks
-  RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size)
+  /*RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size)
   {
     // determine the range of rows for this task
     // and ensure all rows are covered
     size_t first = (N * task_id) / size;
     size_t next = (N * (task_id + 1)) / size;
 
+    std::stringstream ss;
+    ss << "Task " << task_id << " running on thread " 
+       << std::this_thread::get_id() << " (rows " << first << "-" << next << ")\n";
+    cout << ss.str();
+
     // perform multiplication for assigned rows
-    /*
-    for (size_t i = row_start; i < row_end; i++)
+    
+    /*for (size_t i = first; i < next; i++)
       for (size_t j = 0; j < N; j++)
       {
         double sum = 0.0;
@@ -144,11 +150,35 @@ int main()
           sum += A(i,k) * B(k,j);
         C(i,j) = sum;
       }
-    */
+    
    // perform computation for the row block
    C.rows(first, next) = A.rows(first, next) * B;
-  });
+  });*/
 
+  RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size)
+{
+    // add a timer for each task
+    static Timer t_task("matrix mult task", {10,0,0});
+    RegionTimer reg(t_task);
+    
+    // determine the range of rows for this task
+    // and ensure all rows are covered
+    size_t first = (N * task_id) / size;
+    size_t next = (N * (task_id + 1)) / size;
+    
+    // perform multiplication for assigned rows
+    /*for (size_t i = first; i < next; i++)
+      for (size_t j = 0; j < N; j++)
+      {
+        double sum = 0.0;
+        for (size_t k = 0; k < N; k++)
+          sum += A(i,k) * B(k,j);
+        C(i,j) = sum;
+      }*/
+    
+    // perform computation for the row block
+    C.rows(first, next) = A.rows(first, next) * B;
+});
 
   
   StopWorkers();
