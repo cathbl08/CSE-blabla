@@ -186,6 +186,37 @@ C_la = matmul_lapack(A, B)
 
 Performance benchmark can be found in the `py_demos` folder.
 
+## Linear Algebra features
+The library includes several advanced algebraic operations, such as matrix inversion and QR decomposition. These are implemented directly within the Matrix class for ease of use.
+
+Matrix inversion is performed using the Gauss-Jordan algorithm. The implementation includes a partial pivoting strategy to improve numerical stability and handle zero-diagonal elements. If a matrix is found to be singular (non-invertible), the function throws a `std::invalid_argument`.
+
+```cpp
+bla::Matrix<double> mat(3, 3);
+// initialize mat
+// Calculate the inverse
+bla::Matrix<double> inv_mat = mat.inv();
+
+// Verification:
+std::cout << "Identity check: " << std::endl << mat * inv_mat << std::endl;
+```
+
+The QR decomposition is implemented using Householder transformations. It factorizes a quadratic matrix A into an orthogonal matrix Q and an upper triangular matrix R.
+The function `qr_decomp()` returns a `std::tuple`, allowing you to use C++17 structured bindings for a clean and readable syntax as shown in the `demo_matrix.cpp`:
+
+```cpp
+bla::Matrix<double> mat2(3, 3);
+// initialize mat2
+
+// Structured bindings to unpack Q and R automatically
+auto [Q, R] = mat2.qr_decomp(); 
+
+std::cout << "Q = " << std::endl << Q << std::endl;
+std::cout << "R = " << std::endl << R << std::endl;
+
+// Verification: Q * R should equal the original matrix
+std::cout << "Q*R result: " << std::endl << Q * R << std::endl;
+```
 
 # Performance
 
@@ -264,7 +295,7 @@ We load a single scalar A_ik and broadcast it across all lanes of a SIMD vector.
 This scalar is multiplied against an entire SIMD block of Matrix B, performing multiple operations per load.
 Organizing data into tiles reduces the ratio of slow memory transfers to fast floating-point operations.
 
-Benchmarks in `demos/simd_timings.cpp` confirm that this pipelined approach outperforms standard loops by saturating the CPU's pipeline. As a user, these optimizations are triggered automatically via expression templates. 
+Benchmarks in `Fast-CSErious/demos/simd_timings.cpp` confirm that this pipelined approach outperforms standard loops by saturating the CPU's pipeline. As a user, these optimizations are triggered automatically via expression templates. 
 
 Simply writing a standard matrix product utilizes the optimized kernels:
 
@@ -275,5 +306,44 @@ using namespace ASC_bla;
 // The Expression Template system automatically breaks this 
 // operation into pipelined SIMD tiles:
 Matrix<double> C = A * B;
+```
+
+## Caches
+
+Large matrices cannot fit entirely into the CPU's fastest memory, the cache. Without optimization, the CPU spends more time waiting for data from the RAM than performing calculations.
+CSE-blabla solves this using a blocked approach to ensure maximum data reuse.
+
+We implement this through a two-level blocking system found in `matrix.hpp` and `matexpr.hpp`.
+At the first level, the library partitions large matrices into macro-blocks that fit within the Level 2 cache.
+At the second level, these blocks are further divided into tiny tiles processed by our micro-kernels, which are small enough to be stored directly in the Level 1 cache and CPU registers.
+This ensures that every piece of data loaded from the main memory is used for as many calculations as possible before being replaced.
+
+Users do not need to manage these memory levels manually, as the library is designed to handle cache-blocking automatically through our Expression Template system. By simply using standard matrix operators, the library selects the most efficient evaluation path based on the specific dimensions and storage order of your data.
+
+## Parallelization
+
+To satisfy the need for lightweight thread synchronization, we implemented a custom lock based on the Compare-and-Swap (CAS) operation.
+Unlike standard mutexes that put threads to sleep, this implementation uses `std::atomic<T>::compare_exchange_strong` to create a spinlock. The thread repeatedly attempts to swap a boolean flag from false to true in a single atomic hardware instruction, ensuring that only one worker can enter a critical section at a time without the overhead of operating system context switches.
+
+This is the primary mechanism used in our `SimpleLockFreeQueue` to allow multiple worker threads to pull tasks simultaneously without crashing or losing data, see implementation in `Fast-CSErious/concurrentqueue/benchmarks/simplelockfree.h`.
+
+We also parallelized the matrix-matrix multiplication by using the RunParallel task manager to distribute work across the available CPU cores. 
+In `demo_tasks.cpp`, we implemented parallel matrix multiplication by partitioning the result matrix into independent row blocks. Because each thread writes to a unique memory region, we achieve thread safety without the need for expensive locks, allowing the computation to scale linearly with the number of CPU cores.
+
+```cpp
+StartWorkers(7); // Main thread + 7 workers
+const size_t num_tasks = 8;
+
+RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size) {
+    size_t first = (N * task_id) / size;
+    size_t next = (N * (task_id + 1)) / size;
+    
+    // Each thread computes its unique slice of the result matrix
+    for (size_t i = first; i < next; i++)
+        for (size_t j = 0; j < N; j++)
+            for (size_t k = 0; k < N; k++)
+                C(i,j) += A(i,k) * B(k,j);
+});
+StopWorkers();
 ```
 
