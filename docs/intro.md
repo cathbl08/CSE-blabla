@@ -359,3 +359,121 @@ Here, we used a 2000 x 2000 system and 8 threads to run the matrix multiplicatio
 
 # ODE-to-CSE
 
+## Introduction
+
+ODE-to-CSE is a C++ library specifically designed for solving nonlinear ODEs.
+The library functions by defining the equation through a right-hand side function object. It offers a variety of time-stepping algorithms that can be utilized to simulate dynamic systems, such as multi-body mass-spring systems.
+
+You can find the underlying theory for these methods here: [Solving ODEs Theory](https://jschoeberl.github.io/IntroSC/ODEs/ODEs.html)
+
+### How to Build and Run the Library
+
+The library depends on pybind11 and lapack, which must be installed on your system. To get started, clone the repository and initialize the nanoblas linear algebra submodule:
+
+```console
+git clone https://github.com/my_fork_on_github/ASC-ODE.git
+cd ASC-ODE
+git submodule update --init
+```
+
+To build the library, navigate to the project root and execute the standard CMake workflow:
+
+```console
+mkdir build
+cd build
+cmake ..
+make
+```
+
+After the build is complete, you can run the demonstration executable from the build directory:
+
+```console
+./test_ode
+```
+
+This generates simulation results in a text file (e.g., `output_test_ode.txt`).
+To visualize these results and generate plots for the mass-spring system, navigate to the demos folder and use the Python script:
+
+```console
+python3 plotmassspring.py
+```
+
+### Changing the simulation method
+
+You can modify the simulation behavior in `demos/test_ode.cpp`.
+The library supports multiple methods including Explicit Euler, Improved Euler, and Implicit Euler.
+
+To switch methods or adjust the resolution, modify the main() function:
+
+```cpp
+// From demos/test_ode.cpp
+int steps = 200; // Change steps for higher resolution
+...
+// Switch the stepper method
+// ExplicitEuler stepper(rhs);
+ImprovedEuler stepper(rhs);
+```
+
+Rebuild the project using `make` after any changes to `test_ode.cpp` for the changes to take effect.
+
+## Improved Euler Method
+
+The Improved Euler method is an explicit second-order Runge-Kutta scheme. It uses a predictor-corrector approach to achieve better numerical accuracy than the standard Euler method by interpreting the difference quotient as an approximation to the derivative at the mid-point of the interval.
+
+### Mathematical Overview
+The method interprets the difference quotient as an approximation to the derivative at the mid-point of the interval.
+Given an autonomous ODE $\dot{y} = f(y)$, the solution is updated at each time step using a two-step predictor-corrector process:
+
+An intermediate state $\tilde{y}$ is estimated at the midpoint of the interval:
+$$ \tilde{y} = y_n + \frac{\tau}{2} f(y_n) $$
+
+The final update uses the derivative evaluated at this intermediate point:
+
+$$ y_{n+1} = y_n + \tau f(\tilde{y}) $$
+
+
+### Implementation
+In our library, the ExplicitEuler and ImprovedEuler class are defined in `timestepper.hpp` and inherit from the base TimeStepper class.
+
+The constructor requires a shared pointer to a NonlinearFunction which represents the right-hand side $f(y)$ of the ODE:
+```cpp
+ExplicitEuler(std::shared_ptr<NonlinearFunction> rhs);
+ImprovedEuler(std::shared_ptr<NonlinearFunction> rhs);
+```
+### Parameters
+$\tau$ : Time step size
+$y$ : The current solution vector $y_n$, modified in-place to contain $y_{n+1}$ after the step.
+
+The implementation avoids unnecessary reallocations by utilizing the member vector $m\_vecf$.
+The core logic calculates the intermediate $y\_tilde$ before performing the final update:
+
+```cpp
+void doStep(double tau, VectorView<double> y) override
+{
+  // Evaluate f at current y
+  this->m_rhs->evaluate(y, m_vecf);
+  
+  // Compute intermediate predictor point y_tilde
+  Vector<> y_tilde = y + tau / 2 * m_vecf;
+  
+  // Evaluate f at y_tilde and perform final update
+  this->m_rhs->evaluate(y_tilde, m_vecf);
+  y += tau * m_vecf;
+}
+```
+
+### How can you use this implementation?
+
+As demonstrated in `test_ode.cpp`, you can initialize the stepper with a right-hand side object (such as a MassSpring system) and iterate through the desired number of steps:
+
+```cpp
+auto rhs = std::make_shared<MassSpring>(1.0, 1.0);
+ImprovedEuler stepper2(rhs);
+
+for (int i = 0; i < steps; i++)
+{
+  stepper2.doStep(tau, y);
+  outfile2 << (i+1) * tau << "  " << y(0) << " " << y(1) << std::endl;
+}
+````
+
