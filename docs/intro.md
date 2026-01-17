@@ -322,13 +322,12 @@ Users do not need to manage these memory levels manually, as the library is desi
 
 ## Parallelization
 
-To satisfy the need for lightweight thread synchronization, we implemented a custom lock based on the Compare-and-Swap (CAS) operation.
-Unlike standard mutexes that put threads to sleep, this implementation uses `std::atomic<T>::compare_exchange_strong` to create a spinlock. The thread repeatedly attempts to swap a boolean flag from false to true in a single atomic hardware instruction, ensuring that only one worker can enter a critical section at a time without the overhead of operating system context switches.
-
-This is the primary mechanism used in our `SimpleLockFreeQueue` to allow multiple worker threads to pull tasks simultaneously without crashing or losing data, see implementation in `Fast-CSErious/concurrentqueue/benchmarks/simplelockfree.h`.
+For lightweight thread synchronization, we utilize the Compare-and-Swap (CAS) operation.
+Unlike standard mutexes that put threads to sleep, this implementation uses `std::atomic<T>::compare_exchange_strong` to create a spinlock. 
+This allows a thread to poll a memory location and update it only if the state is exactly as expected. This mechanism is the engine behind our `SimpleLockFreeQueue` (found in `Fast-CSErious/concurrentqueue/benchmarks/simplelockfree.h`), allowing workers to claim tasks with near-zero latency.
 
 We also parallelized the matrix-matrix multiplication by using the RunParallel task manager to distribute work across the available CPU cores. 
-In `demo_tasks.cpp`, we implemented parallel matrix multiplication by partitioning the result matrix into independent row blocks. Because each thread writes to a unique memory region, we achieve thread safety without the need for expensive locks, allowing the computation to scale linearly with the number of CPU cores.
+In `demo_tasks.cpp`, we demonstrated a row-based partitioning strategy where the result matrix is divided into independent blocks. Each thread calculates a specific range of rows, ensuring thread safety by design since no two workers write to the same memory location.
 
 ```cpp
 StartWorkers(7); // Main thread + 7 workers
@@ -347,3 +346,8 @@ RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size) {
 StopWorkers();
 ```
 
+Performance can be visualized using the Vite Trace Explorer to ensure all CPU cores are equally utilized during parallel execution.
+
+<img src="images/vite_tracer_4.png" alt="Parallel Vite Trace (4 threads)"  width="800px">
+
+<img src="images/vite_tracer_8.png" alt="Parallel Vite Trace (8 threads)"  width="800px">

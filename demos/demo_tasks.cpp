@@ -19,8 +19,8 @@ int main()
   // initialize the trace timeline
   timeline = std::make_unique<TimeLine>("demo.trace");
   // start working threads (3 workers + main thread)
-  StartWorkers(3);
-  // StartWorkers(7);
+  // StartWorkers(3);
+  StartWorkers(7);
   // StartWorkers(0);
   
   
@@ -99,8 +99,8 @@ int main()
   // use RunParallel for Matrix-Matrix multiplication task
 
   // matrix size
-  const size_t N = 500;
-  // const size_t N = 2000;
+  // const size_t N = 500;
+  const size_t N = 2000;
   // const size_t N = 4000;
   // use 4 tasks (3 workers and 1 main)
 
@@ -134,7 +134,7 @@ int main()
   RunParallel(num_tasks, [N, &A, &B, &C](int task_id, int size)
 {
     // add a timer for each task
-    static Timer t_task("matrix mult task", {10,0,0});
+    static Timer t_task("matrix mult task", {0,10,10});
     RegionTimer reg(t_task);
     
     // determine the range of rows for this task
