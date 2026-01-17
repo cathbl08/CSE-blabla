@@ -348,6 +348,14 @@ StopWorkers();
 
 Performance can be visualized using the Vite Trace Explorer to ensure all CPU cores are equally utilized during parallel execution.
 
+By running the parallel matrix multiplication for a 500 x 500 system, the Vite tracer visualizes how the workload is distributed across 4 total threads.
+
 <img src="images/vite_tracer_4.png" alt="Parallel Vite Trace (4 threads)"  width="800px">
 
+Here, we used a 2000 x 2000 system and 8 threads to run the matrix multiplication.
+
 <img src="images/vite_tracer_8.png" alt="Parallel Vite Trace (8 threads)"  width="800px">
+
+
+# ODE-to-CSE
+
