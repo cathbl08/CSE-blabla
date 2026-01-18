@@ -4,7 +4,14 @@
 format: jb-book
 root: intro.md
 
-
+parts:
+  - caption: Fast-CSErious
+    chapters:
+      - file: FastCSErious.md
+  
+  - caption: ODE-to-CSE
+    chapters:
+      - file: ODEtoCSE.md
 
 
 
