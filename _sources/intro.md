@@ -186,8 +186,34 @@ C_la = matmul_lapack(A, B)
 
 Performance benchmark can be found in the `py_demos` folder.
 
+## Linear Algebra features
+The library includes several advanced algebraic operations, such as matrix inversion and QR decomposition. These are implemented directly within the Matrix class for ease of use.
 
+Matrix inversion is performed using the Gauss-Jordan algorithm. The implementation includes a partial pivoting strategy to improve numerical stability and handle zero-diagonal elements. If a matrix is found to be singular (non-invertible), the function throws a `std::invalid_argument`.
 
+```cpp
+bla::Matrix<double> mat(3, 3);
+// initialize mat
+// Calculate the inverse
+bla::Matrix<double> inv_mat = mat.inv();
 
+// Verification:
+std::cout << "Identity check: " << std::endl << mat * inv_mat << std::endl;
+```
 
-   
+The QR decomposition is implemented using Householder transformations. It factorizes a quadratic matrix A into an orthogonal matrix Q and an upper triangular matrix R.
+The function `qr_decomp()` returns a `std::tuple`, allowing you to use C++17 structured bindings for a clean and readable syntax as shown in the `demo_matrix.cpp`:
+
+```cpp
+bla::Matrix<double> mat2(3, 3);
+// initialize mat2
+
+// Structured bindings to unpack Q and R automatically
+auto [Q, R] = mat2.qr_decomp(); 
+
+std::cout << "Q = " << std::endl << Q << std::endl;
+std::cout << "R = " << std::endl << R << std::endl;
+
+// Verification: Q * R should equal the original matrix
+std::cout << "Q*R result: " << std::endl << Q * R << std::endl;
+```
