@@ -6,8 +6,9 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; Introduction to Scientific Computing</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pipelining &#8212; Introduction to Scientific Computing</title>
   
   
   
@@ -56,9 +57,11 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
-    <link rel="index" title="Index" href="#" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'fast-pipelining';</script>
+    <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Caches" href="fast-caches.html" />
+    <link rel="prev" title="Performance" href="FastCSErious.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -121,8 +124,6 @@
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar">
         
 
@@ -179,9 +180,9 @@
             </li>
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Fast-CSErious</span></p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Vectorization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="fast-pipelining.html">Pipelining</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Pipelining</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fast-caches.html">Cache Optimization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
@@ -251,6 +252,54 @@
 
 
 
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/fast-pipelining.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
 <button onclick="toggleFullScreen()"
   class="btn btn-sm btn-fullscreen-button"
   title="Fullscreen mode"
@@ -295,7 +344,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1></h1>
+    <h1>Pipelining</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -309,13 +358,47 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
+  <section class="tex2jax_ignore mathjax_ignore" id="pipelining">
+<h1>Pipelining<a class="headerlink" href="#pipelining" title="Link to this heading">#</a></h1>
+<p>In high-performance computing, a CPU can stall if it must wait for a calculation to finish before starting the next.
+To prevent this, CSE-blabla utilizes tile-based accumulation to hide instruction latency and maximize throughput.</p>
+<p>Our implementation in <code class="docutils literal notranslate"><span class="pre">matexpr.hpp</span></code>, specifically MultMatExpr::GetTile, optimizes the Arithmetic Intensity of matrix operations.
+Instead of a single dependency chain, we process a tile of height H to maintain multiple independent accumulators. While the CPU waits for the result of one row, it simultaneously executes the next, ensuring the arithmetic units are never idle.</p>
+<p>To push performance toward the hardware’s theoretical limit, we use three key strategies.
+We load a single scalar A_ik and broadcast it across all lanes of a SIMD vector.
+This scalar is multiplied against an entire SIMD block of Matrix B, performing multiple operations per load.
+Organizing data into tiles reduces the ratio of slow memory transfers to fast floating-point operations.</p>
+<p>Benchmarks in <code class="docutils literal notranslate"><span class="pre">Fast-CSErious/demos/simd_timings.cpp</span></code> confirm that this pipelined approach outperforms standard loops by saturating the CPU’s pipeline. As a user, these optimizations are triggered automatically via expression templates.</p>
+<p>Simply writing a standard matrix product utilizes the optimized kernels:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;matrix.hpp&gt;</span>
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">ASC_bla</span><span class="p">;</span>
 
-<h1 id="index">Index</h1>
-
-<div class="genindex-jumpbox">
- 
+<span class="c1">// The Expression Template system automatically breaks this </span>
+<span class="c1">// operation into pipelined SIMD tiles:</span>
+<span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
+</pre></div>
 </div>
+</section>
 
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
 
                 </article>
               
@@ -327,6 +410,24 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="FastCSErious.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Performance</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="fast-caches.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Caches</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               

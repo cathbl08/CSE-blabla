@@ -182,7 +182,10 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Fast-CSErious</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Vectorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-pipelining.html">Pipelining</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-caches.html">Cache Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">ODE-to-CSE</span></p>
 <ul class="current nav bd-sidenav">
@@ -375,13 +378,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>The Newton solver finds a root <span class="math notranslate nohighlight">\(x\)</span> such that <span class="math notranslate nohighlight">\(F(x) = 0\)</span> by iteratively applying the following formula:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-8f930e04-330f-4bca-86bb-9df729e93ddf">
-<span class="eqno">(5)<a class="headerlink" href="#equation-8f930e04-330f-4bca-86bb-9df729e93ddf" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-16a7a4aa-b1e0-4b85-b413-7503188fa7d3">
+<span class="eqno">(5)<a class="headerlink" href="#equation-16a7a4aa-b1e0-4b85-b413-7503188fa7d3" title="Permalink to this equation">#</a></span>\[\begin{equation}
     x_{k+1} = x_k - J_F(x_k)^{-1} F(x_k)
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(J_F(x_k)\)</span> is the Jacobian matrix evaluated at <span class="math notranslate nohighlight">\(x_k\)</span>. The iteration terminates when the residual norm satisfies:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-498155e4-e16c-41ab-ac52-976be2b6a76b">
-<span class="eqno">(6)<a class="headerlink" href="#equation-498155e4-e16c-41ab-ac52-976be2b6a76b" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-6c974562-7873-4471-9346-6de59b58becd">
+<span class="eqno">(6)<a class="headerlink" href="#equation-6c974562-7873-4471-9346-6de59b58becd" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \|F(x_{k+1})\| &lt; \text{tol}
 \end{equation}\]</div>
 <p>or after reaching a maximum number of steps.</p>
@@ -399,11 +402,11 @@ document.write(`
 </section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
-<p>func: A NonlinearFunction object that provides evaluate() and evaluateDeriv() methods.
-x: The initial guess for the root, modified in-place to contain the solution.
-tol: The tolerance for convergence based on the residual norm.
-maxsteps: The maximum number of iterations to perform.
-callback: An optional function called at each iteration.</p>
+<p>func: A NonlinearFunction object that provides evaluate() and evaluateDeriv() methods.</p>
+<p>x: The initial guess for the root, modified in-place to contain the solution.</p>
+<p>tol: The tolerance for convergence based on the residual norm.</p>
+<p>maxsteps: The maximum number of iterations to perform.</p>
+<p>callback: An optional function called at each iteration.</p>
 </section>
 <section id="how-does-it-work">
 <h2>How does it work?<a class="headerlink" href="#how-does-it-work" title="Link to this heading">#</a></h2>

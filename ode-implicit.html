@@ -183,7 +183,10 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Fast-CSErious</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Vectorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-pipelining.html">Pipelining</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-caches.html">Cache Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">ODE-to-CSE</span></p>
 <ul class="current nav bd-sidenav">
@@ -376,13 +379,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>For a constant mesh size <span class="math notranslate nohighlight">\(\tau\)</span>, the numerical update is defined by the following equation:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-cf405a5f-8d9f-408e-b9df-c3d6be9913af">
-<span class="eqno">(1)<a class="headerlink" href="#equation-cf405a5f-8d9f-408e-b9df-c3d6be9913af" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-11e4ee5b-887b-4222-a662-fef15c69d7c6">
+<span class="eqno">(1)<a class="headerlink" href="#equation-11e4ee5b-887b-4222-a662-fef15c69d7c6" title="Permalink to this equation">#</a></span>\[\begin{equation}
     y_{n+1} = y_n + \tau f(y_{n+1})
 \end{equation}\]</div>
 <p>To determine the value of <span class="math notranslate nohighlight">\(y_{n+1}\)</span>, we must solve a non-linear system of equations at every time step:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-35f6b68a-7ac1-4d91-a24b-a061c20dc9ba">
-<span class="eqno">(2)<a class="headerlink" href="#equation-35f6b68a-7ac1-4d91-a24b-a061c20dc9ba" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-4160a614-b492-482f-a5eb-91f8a8070420">
+<span class="eqno">(2)<a class="headerlink" href="#equation-4160a614-b492-482f-a5eb-91f8a8070420" title="Permalink to this equation">#</a></span>\[\begin{equation}
     G(y_{n+1}) = y_{n+1} - y_n - \tau f(y_{n+1}) = 0
 \end{equation}\]</div>
 <p>In this library, the root of <span class="math notranslate nohighlight">\(G(y_{n+1})\)</span> is found using a Newton solver.</p>
@@ -404,8 +407,8 @@ The constructor initializes the internal equation <span class="math notranslate 
 </section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
-<p><span class="math notranslate nohighlight">\(\tau\)</span> : Time step size
-<span class="math notranslate nohighlight">\(y\)</span> : The current solution vector <span class="math notranslate nohighlight">\(y_n\)</span>, modified in-place by the Newton solver to become <span class="math notranslate nohighlight">\(y_{n+1}\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(\tau\)</span> : Time step size</p>
+<p><span class="math notranslate nohighlight">\(y\)</span> : The current solution vector <span class="math notranslate nohighlight">\(y_n\)</span>, modified in-place by the Newton solver to become <span class="math notranslate nohighlight">\(y_{n+1}\)</span>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">doStep</span></code> method sets the previous state and time step size before invoking the Newton solver to find <span class="math notranslate nohighlight">\(y_{n+1}\)</span>:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">doStep</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">VectorView</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
 <span class="p">{</span>

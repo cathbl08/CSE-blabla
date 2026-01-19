@@ -183,7 +183,10 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Fast-CSErious</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Performance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FastCSErious.html">Vectorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-pipelining.html">Pipelining</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-caches.html">Cache Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">ODE-to-CSE</span></p>
 <ul class="current nav bd-sidenav">
@@ -394,8 +397,8 @@ $<span class="math notranslate nohighlight">\( \tilde{y} = y_n + \frac{\tau}{2} 
 </section>
 <section id="parameters">
 <h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading">#</a></h2>
-<p><span class="math notranslate nohighlight">\(\tau\)</span> : Time step size
-<span class="math notranslate nohighlight">\(y\)</span> : The current solution vector <span class="math notranslate nohighlight">\(y_n\)</span>, modified in-place to contain <span class="math notranslate nohighlight">\(y_{n+1}\)</span> after the step.</p>
+<p><span class="math notranslate nohighlight">\(\tau\)</span> : Time step size</p>
+<p><span class="math notranslate nohighlight">\(y\)</span> : The current solution vector <span class="math notranslate nohighlight">\(y_n\)</span>, modified in-place to contain <span class="math notranslate nohighlight">\(y_{n+1}\)</span> after the step.</p>
 <p>The core logic calculates the intermediate <span class="math notranslate nohighlight">\(y\_tilde\)</span> before performing the final update:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">doStep</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">VectorView</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
 <span class="p">{</span>

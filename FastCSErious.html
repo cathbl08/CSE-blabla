@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -60,7 +60,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'FastCSErious';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="ODE-to-CSE" href="ODEtoCSE.html" />
+    <link rel="next" title="Pipelining" href="fast-pipelining.html" />
     <link rel="prev" title="Welcome to ASC-bla’s documentation!" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -181,11 +181,18 @@
         </ul>
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Fast-CSErious</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Performance</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Vectorization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-pipelining.html">Pipelining</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-caches.html">Cache Optimization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">ODE-to-CSE</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="ODEtoCSE.html">ODE-to-CSE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ODEtoCSE.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-improved.html">Improved Euler Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-implicit.html">Implicit Euler Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
 </ul>
 
     </div>
@@ -352,9 +359,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorization-simd">Vectorization (SIMD)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorizing-mathematical-functions">Vectorizing mathematical functions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">Pipelining</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caches">Caches</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">Parallelization</a></li>
 </ul>
             </nav>
         </div>
@@ -416,68 +420,6 @@ Our system automatically passes the job down to the low-level intrinsic function
 </pre></div>
 </div>
 </section>
-<section id="pipelining">
-<h2>Pipelining<a class="headerlink" href="#pipelining" title="Link to this heading">#</a></h2>
-<p>In high-performance computing, a CPU can stall if it must wait for a calculation to finish before starting the next.
-To prevent this, CSE-blabla utilizes tile-based accumulation to hide instruction latency and maximize throughput.</p>
-<p>Our implementation in <code class="docutils literal notranslate"><span class="pre">matexpr.hpp</span></code>, specifically MultMatExpr::GetTile, optimizes the Arithmetic Intensity of matrix operations.
-Instead of a single dependency chain, we process a tile of height H to maintain multiple independent accumulators. While the CPU waits for the result of one row, it simultaneously executes the next, ensuring the arithmetic units are never idle.</p>
-<p>To push performance toward the hardware’s theoretical limit, we use three key strategies.
-We load a single scalar A_ik and broadcast it across all lanes of a SIMD vector.
-This scalar is multiplied against an entire SIMD block of Matrix B, performing multiple operations per load.
-Organizing data into tiles reduces the ratio of slow memory transfers to fast floating-point operations.</p>
-<p>Benchmarks in <code class="docutils literal notranslate"><span class="pre">Fast-CSErious/demos/simd_timings.cpp</span></code> confirm that this pipelined approach outperforms standard loops by saturating the CPU’s pipeline. As a user, these optimizations are triggered automatically via expression templates.</p>
-<p>Simply writing a standard matrix product utilizes the optimized kernels:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;matrix.hpp&gt;</span>
-<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">ASC_bla</span><span class="p">;</span>
-
-<span class="c1">// The Expression Template system automatically breaks this </span>
-<span class="c1">// operation into pipelined SIMD tiles:</span>
-<span class="n">Matrix</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">A</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B</span><span class="p">;</span>
-</pre></div>
-</div>
-</section>
-<section id="caches">
-<h2>Caches<a class="headerlink" href="#caches" title="Link to this heading">#</a></h2>
-<p>Large matrices cannot fit entirely into the CPU’s fastest memory, the cache. Without optimization, the CPU spends more time waiting for data from the RAM than performing calculations.
-CSE-blabla solves this using a blocked approach to ensure maximum data reuse.</p>
-<p>We implement this through a two-level blocking system found in <code class="docutils literal notranslate"><span class="pre">matrix.hpp</span></code> and <code class="docutils literal notranslate"><span class="pre">matexpr.hpp</span></code>.
-At the first level, the library partitions large matrices into macro-blocks that fit within the Level 2 cache.
-At the second level, these blocks are further divided into tiny tiles processed by our micro-kernels, which are small enough to be stored directly in the Level 1 cache and CPU registers.
-This ensures that every piece of data loaded from the main memory is used for as many calculations as possible before being replaced.</p>
-<p>Users do not need to manage these memory levels manually, as the library is designed to handle cache-blocking automatically through our Expression Template system. By simply using standard matrix operators, the library selects the most efficient evaluation path based on the specific dimensions and storage order of your data.</p>
-</section>
-<section id="parallelization">
-<h2>Parallelization<a class="headerlink" href="#parallelization" title="Link to this heading">#</a></h2>
-<p>For lightweight thread synchronization, we utilize the Compare-and-Swap (CAS) operation.
-Unlike standard mutexes that put threads to sleep, this implementation uses <code class="docutils literal notranslate"><span class="pre">std::atomic&lt;T&gt;::compare_exchange_strong</span></code> to create a spinlock.
-This allows a thread to poll a memory location and update it only if the state is exactly as expected. This mechanism is the engine behind our <code class="docutils literal notranslate"><span class="pre">SimpleLockFreeQueue</span></code> (found in <code class="docutils literal notranslate"><span class="pre">Fast-CSErious/concurrentqueue/benchmarks/simplelockfree.h</span></code>), allowing workers to claim tasks with near-zero latency.</p>
-<p>We also parallelized the matrix-matrix multiplication by using the RunParallel task manager to distribute work across the available CPU cores.
-In <code class="docutils literal notranslate"><span class="pre">demo_tasks.cpp</span></code>, we demonstrated a row-based partitioning strategy where the result matrix is divided into independent blocks. Each thread calculates a specific range of rows, ensuring thread safety by design since no two workers write to the same memory location.</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">StartWorkers</span><span class="p">(</span><span class="mi">7</span><span class="p">);</span><span class="w"> </span><span class="c1">// Main thread + 7 workers</span>
-<span class="k">const</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_tasks</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
-
-<span class="n">RunParallel</span><span class="p">(</span><span class="n">num_tasks</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="n">N</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">C</span><span class="p">](</span><span class="kt">int</span><span class="w"> </span><span class="n">task_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">first</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">task_id</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">next</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">N</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">task_id</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>
-<span class="w">    </span>
-<span class="w">    </span><span class="c1">// Each thread computes its unique slice of the result matrix</span>
-<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">first</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">next</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">j</span><span class="o">++</span><span class="p">)</span>
-<span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">N</span><span class="p">;</span><span class="w"> </span><span class="n">k</span><span class="o">++</span><span class="p">)</span>
-<span class="w">                </span><span class="n">C</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">A</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">B</span><span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">j</span><span class="p">);</span>
-<span class="p">});</span>
-<span class="n">StopWorkers</span><span class="p">();</span>
-</pre></div>
-</div>
-<p>Performance can be visualized using the Vite Trace Explorer to ensure all CPU cores are equally utilized during parallel execution.</p>
-<p>By running the parallel matrix multiplication for a 500 x 500 system, the Vite tracer visualizes how the workload is distributed across 4 total threads.</p>
-<a class="reference internal image-reference" href="_images/vite_tracer_4.png"><img alt="Parallel Vite Trace (4 threads)" src="_images/vite_tracer_4.png" style="width: 800px;" />
-</a>
-<p>Here, we used a 2000 x 2000 system and 8 threads to run the matrix multiplication.</p>
-<a class="reference internal image-reference" href="_images/vite_tracer_8.png"><img alt="Parallel Vite Trace (8 threads)" src="_images/vite_tracer_8.png" style="width: 800px;" />
-</a>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -520,11 +462,11 @@ In <code class="docutils literal notranslate"><span class="pre">demo_tasks.cpp</
       </div>
     </a>
     <a class="right-next"
-       href="ODEtoCSE.html"
+       href="fast-pipelining.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">ODE-to-CSE</p>
+        <p class="prev-next-title">Pipelining</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -547,9 +489,6 @@ In <code class="docutils literal notranslate"><span class="pre">demo_tasks.cpp</
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorization-simd">Vectorization (SIMD)</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#vectorizing-mathematical-functions">Vectorizing mathematical functions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pipelining">Pipelining</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#caches">Caches</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parallelization">Parallelization</a></li>
 </ul>
   </nav></div>
 

@@ -38,6 +38,7 @@ CrankNicholson(std::shared_ptr<NonlinearFunction> rhs)
 ### Parameters
 
 $\tau$ : Time step size
+
 $y$ : The current solution vector $y_n$, modified in-place by the Newton solver to become $y_{n+1}$.
 
 The doStep implementation first evaluates the function at the current point to store $f(y_n)$ before triggering the solver:

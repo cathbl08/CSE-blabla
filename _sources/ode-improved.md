@@ -24,6 +24,7 @@ ImprovedEuler(std::shared_ptr<NonlinearFunction> rhs);
 ```
 ### Parameters
 $\tau$ : Time step size
+
 $y$ : The current solution vector $y_n$, modified in-place to contain $y_{n+1}$ after the step.
 
 The core logic calculates the intermediate $y\_tilde$ before performing the final update:

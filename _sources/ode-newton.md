@@ -28,9 +28,13 @@ void NewtonSolver(std::shared_ptr<NonlinearFunction> func,
 ### Parameters
 
 func: A NonlinearFunction object that provides evaluate() and evaluateDeriv() methods.
+
 x: The initial guess for the root, modified in-place to contain the solution.
+
 tol: The tolerance for convergence based on the residual norm.
+
 maxsteps: The maximum number of iterations to perform.
+
 callback: An optional function called at each iteration.
 
 ### How does it work?

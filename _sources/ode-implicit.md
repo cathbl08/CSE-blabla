@@ -35,6 +35,7 @@ ImplicitEuler(std::shared_ptr<NonlinearFunction> rhs)
 ### Parameters
 
 $\tau$ : Time step size
+
 $y$ : The current solution vector $y_n$, modified in-place by the Newton solver to become $y_{n+1}$.
 
 The `doStep` method sets the previous state and time step size before invoking the Newton solver to find $y_{n+1}$:
