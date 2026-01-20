@@ -30,6 +30,10 @@ parts:
         title: Newton Solver
       - file: ode-autodiff.md
         title: Automatic Differentiation
+      - file: ode-RK.md
+        title: Runge-Kutta Methods
+      - file: ode-appl.md
+        title: Applications
 
 
 
