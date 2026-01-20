@@ -59,3 +59,10 @@ for (int i = 0; i < steps; i++)
 }
 ```
 
+### Plots of mass-spring system and RC circuit
+
+<img src="images/ImprovedEuler.png" alt="Time Evolution and Phase Plot of Mass-Spring System solved with Improved Euler Method"  width="800px">
+
+<img src="images/RC_ImprovedEuler.png" alt="Time Evolution of RC Circuit solved with Improved Euler Method"  width="600px">
+
+

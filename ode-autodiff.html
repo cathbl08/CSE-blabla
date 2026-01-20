@@ -62,7 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'ode-autodiff';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="ode-RK.html" />
+    <link rel="next" title="Runge-Kutta Methods" href="ode-RK.html" />
     <link rel="prev" title="Newton Solver" href="ode-newton.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -196,6 +196,8 @@
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-RK.html">Runge-Kutta Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-appl.html">Applications</a></li>
 </ul>
 
     </div>
@@ -390,8 +392,8 @@ document.write(`
 <section id="numerical-differentiation">
 <h2>Numerical Differentiation<a class="headerlink" href="#numerical-differentiation" title="Link to this heading">#</a></h2>
 <p>Numerical differentiation approximates the derivative without requiring changes to the function’s implementation. Our library employs a central difference quotient for the i-th partial derivative:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-30409e45-fde7-4197-83dc-5fa9e0c79d24">
-<span class="eqno">(7)<a class="headerlink" href="#equation-30409e45-fde7-4197-83dc-5fa9e0c79d24" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-c91c09a8-9651-4ab0-9401-d44d24c6d2e7">
+<span class="eqno">(7)<a class="headerlink" href="#equation-c91c09a8-9651-4ab0-9401-d44d24c6d2e7" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \frac{\partial f}{\partial x_i} (x) \approx \frac{f(x + \epsilon e_i) - f(x - \epsilon e_i)}{2\epsilon}
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(e_i\)</span> is the unit vector in the i-th direction and <span class="math notranslate nohighlight">\(\epsilon\)</span> is a small perturbation value.</p>
@@ -565,7 +567,7 @@ Here is how to implement it to support AutoDiff:</p>
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">&lt;no title&gt;</p>
+        <p class="prev-next-title">Runge-Kutta Methods</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>

@@ -194,6 +194,8 @@
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-autodiff.html">Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-RK.html">Runge-Kutta Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-appl.html">Applications</a></li>
 </ul>
 
     </div>
@@ -399,11 +401,16 @@ The library functions by defining the equation through a right-hand side functio
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./test_ode</span>
 </pre></div>
 </div>
-<p>This generates simulation results in a text file (e.g., <code class="docutils literal notranslate"><span class="pre">output_test_ode.txt</span></code>).
+<p>This generates simulation results in text files (<code class="docutils literal notranslate"><span class="pre">output_test_ode_&lt;Method&gt;.txt</span></code> for a mass-spring system and <code class="docutils literal notranslate"><span class="pre">output_test_ode_RC_&lt;Method&gt;.txt</span></code> for an electric circuit, respectively) – one for each ODE solver method implemented.
 To visualize these results and generate plots for the mass-spring system, navigate to the demos folder and use the Python script:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 plotmassspring.py</span>
 </pre></div>
 </div>
+<p>To do the same for the RC circuit, run:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">python3 plotRC.py</span>
+</pre></div>
+</div>
+<p>in the demos folder.</p>
 </section>
 <section id="changing-the-simulation-method">
 <h3>Changing the simulation method<a class="headerlink" href="#changing-the-simulation-method" title="Link to this heading">#</a></h3>

@@ -196,6 +196,8 @@
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-autodiff.html">Automatic Differentiation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-RK.html">Runge-Kutta Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-appl.html">Applications</a></li>
 </ul>
 
     </div>
@@ -363,6 +365,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-you-use-this-implementation">How can you use this implementation?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots-of-mass-spring-system-and-rc-circuit">Plots of mass-spring system and RC circuit</a></li>
 </ul>
             </nav>
         </div>
@@ -380,13 +383,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>For a constant mesh size <span class="math notranslate nohighlight">\(\tau\)</span>, the numerical update is defined by the following equation:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-afea3080-91aa-4cbd-9364-cdf1070042ba">
-<span class="eqno">(1)<a class="headerlink" href="#equation-afea3080-91aa-4cbd-9364-cdf1070042ba" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-8e6ef0c3-bdcc-4aed-8e75-43ac17c322ca">
+<span class="eqno">(1)<a class="headerlink" href="#equation-8e6ef0c3-bdcc-4aed-8e75-43ac17c322ca" title="Permalink to this equation">#</a></span>\[\begin{equation}
     y_{n+1} = y_n + \tau f(y_{n+1})
 \end{equation}\]</div>
 <p>To determine the value of <span class="math notranslate nohighlight">\(y_{n+1}\)</span>, we must solve a non-linear system of equations at every time step:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-a70c3c8b-d7f4-4d2e-95a2-76105768cb1c">
-<span class="eqno">(2)<a class="headerlink" href="#equation-a70c3c8b-d7f4-4d2e-95a2-76105768cb1c" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-e76fd209-57ec-4a63-af02-c88dca5f5ac3">
+<span class="eqno">(2)<a class="headerlink" href="#equation-e76fd209-57ec-4a63-af02-c88dca5f5ac3" title="Permalink to this equation">#</a></span>\[\begin{equation}
     G(y_{n+1}) = y_{n+1} - y_n - \tau f(y_{n+1}) = 0
 \end{equation}\]</div>
 <p>In this library, the root of <span class="math notranslate nohighlight">\(G(y_{n+1})\)</span> is found using a Newton solver.</p>
@@ -433,6 +436,13 @@ The constructor initializes the internal equation <span class="math notranslate 
 <span class="p">}</span>
 </pre></div>
 </div>
+</section>
+<section id="plots-of-mass-spring-system-and-rc-circuit">
+<h2>Plots of mass-spring system and RC circuit<a class="headerlink" href="#plots-of-mass-spring-system-and-rc-circuit" title="Link to this heading">#</a></h2>
+<a class="reference internal image-reference" href="_images/ImplicitEuler.png"><img alt="Time Evolution and Phase Plot of Mass-Spring System solved with Implicit Euler Method" src="_images/ImplicitEuler.png" style="width: 800px;" />
+</a>
+<a class="reference internal image-reference" href="_images/RC_ImplicitEuler.png"><img alt="Time Evolution of RC Circuit solved with Implicit Euler Method" src="_images/RC_ImplicitEuler.png" style="width: 600px;" />
+</a>
 </section>
 </section>
 
@@ -504,6 +514,7 @@ The constructor initializes the internal equation <span class="math notranslate 
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation">Implementation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#parameters">Parameters</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-you-use-this-implementation">How can you use this implementation?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots-of-mass-spring-system-and-rc-circuit">Plots of mass-spring system and RC circuit</a></li>
 </ul>
   </nav></div>
 

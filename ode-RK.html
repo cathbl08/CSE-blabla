@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>&lt;no title&gt; &#8212; Introduction to Scientific Computing</title>
+    <title>Runge-Kutta Methods &#8212; Introduction to Scientific Computing</title>
   
   
   
@@ -57,10 +57,12 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'ode-RK';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="ode-appl.html" />
+    <link rel="next" title="Applications" href="ode-appl.html" />
     <link rel="prev" title="Automatic Differentiation" href="ode-autodiff.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -187,13 +189,15 @@
 <li class="toctree-l1"><a class="reference internal" href="fast-parallelization.html">Parallelization</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">ODE-to-CSE</span></p>
-<ul class="nav bd-sidenav">
+<ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ODEtoCSE.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-improved.html">Improved Euler Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-implicit.html">Implicit Euler Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-autodiff.html">Automatic Differentiation</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Runge-Kutta Methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-appl.html">Applications</a></li>
 </ul>
 
     </div>
@@ -347,7 +351,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1><no title></h1>
+    <h1>Runge-Kutta Methods</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -356,9 +360,31 @@ document.write(`
                 <h2> Contents </h2>
             </div>
             <nav aria-label="Page">
-                <ul class="simple visible nav section-nav flex-column">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-overview">Mathematical Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-rk-methods">Explicit RK methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-explicitrungekutta">Implementation: <code class="docutils literal notranslate"><span class="pre">ExplicitRungeKutta</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convenience-tableau-classical-rk4">Convenience tableau: classical RK4</a></li>
 </ul>
-
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-runge-kutta-methods">Implicit Runge-Kutta methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-implicitrungekutta">Implementation: <code class="docutils literal notranslate"><span class="pre">ImplicitRungeKutta</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-tableaus-in-implicitrk-hpp">Built-in tableaus in <code class="docutils literal notranslate"><span class="pre">implicitRK.hpp</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-tableaus-from-nodes-arbitrary-order">Computing tableaus from nodes (arbitrary order)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quadrature-helpers-for-gauss-radau-nodes">Quadrature helpers for Gauss / Radau nodes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-you-use-this-implementation">How can you use this implementation?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-rk-example-rk4">Explicit RK (example: RK4)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-rk-example-gauss-legendre-2">Implicit RK (example: Gauss-Legendre 2)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots-of-mass-spring-system-and-rc-circuit">Plots of mass-spring system and RC circuit</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-runge-kutta-rk4">Explicit Runge-Kutta (RK4)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-runge-kutta-gauss-legendre-2">Implicit Runge-Kutta (Gauss-Legendre 2)</a></li>
+</ul>
+</li>
+</ul>
             </nav>
         </div>
     </div>
@@ -369,7 +395,239 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  
+  <section class="tex2jax_ignore mathjax_ignore" id="runge-kutta-methods">
+<h1>Runge-Kutta Methods<a class="headerlink" href="#runge-kutta-methods" title="Link to this heading">#</a></h1>
+<p>Runge-Kutta (RK) methods are a family of one-step time integration schemes that achieve higher order accuracy by combining multiple evaluations (“stages”) of the right-hand side. This project covers an explicit and an implicit Runge-Kutta solver.</p>
+<section id="mathematical-overview">
+<h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
+<p>Recall the integral formulation of the ODE on time interval <span class="math notranslate nohighlight">\([t_i, t_{i+1}]\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+y(t_{i+1}) = y(t_i) + \int_{t_i}^{t_{i+1}} f(s, y(s))\, ds.
+\]</div>
+<p>Runge-Kutta methods obtain higher accuracy by approximating this integral with a quadrature rule:</p>
+<div class="math notranslate nohighlight">
+\[
+y_{i+1} = y_i + \tau \sum_{j=0}^{s-1} b_j\, f\big(t_i+c_j \tau,\, y_i^j\big),
+\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(s\)</span> is the number of stages,</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_j, b_j\)</span> are nodes and weights of a quadrature rule on <span class="math notranslate nohighlight">\([0,1]\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(y_i^j \approx y(t_i + c_j\tau)\)</span> are the (unknown) stage values.</p></li>
+</ul>
+<p>Stage values are defined by a second quadrature on <span class="math notranslate nohighlight">\([0,c_j]\)</span> (skipping the index <span class="math notranslate nohighlight">\(i\)</span>):</p>
+<div class="math notranslate nohighlight">
+\[
+y^j = y_i + \tau \sum_{l=0}^{s-1} a_{jl}\, f\big(t_i+c_l\tau,\, y^l\big), \qquad 0\le j &lt; s.
+\]</div>
+<p>A particular RK method is defined by the coefficients <span class="math notranslate nohighlight">\((A,b,c)\)</span>, typically given by the Butcher tableau</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{c|ccc}
+c_0 &amp; a_{0,0} &amp; \dots &amp; a_{0,s-1} \\
+\vdots &amp; \vdots &amp; &amp; \vdots \\
+c_{s-1} &amp; a_{s-1,0} &amp; \dots &amp; a_{s-1,s-1} \\
+\hline
+ &amp; b_0 &amp; \dots &amp; b_{s-1}
+\end{array}.
+\end{split}\]</div>
+<p>Instead of solving for the stage values <span class="math notranslate nohighlight">\(y^j\)</span>, many implementations solve for stage slopes <span class="math notranslate nohighlight">\(k^j\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+k^j = f\Big(t_i+c_j\tau,\, y_i + \tau\sum_{l=0}^{s-1} a_{jl} k^l\Big),
+\]</div>
+<p>and update</p>
+<div class="math notranslate nohighlight">
+\[
+y_{i+1} = y_i + \tau \sum_{l=0}^{s-1} b_l k^l.
+\]</div>
+</section>
+<section id="explicit-rk-methods">
+<h2>Explicit RK methods<a class="headerlink" href="#explicit-rk-methods" title="Link to this heading">#</a></h2>
+<p>For explicit RK methods, <span class="math notranslate nohighlight">\(A\)</span> is strictly lower triangular (<span class="math notranslate nohighlight">\(a_{jl}=0\)</span> for <span class="math notranslate nohighlight">\(l\ge j\)</span>). This makes the stages sequential: <span class="math notranslate nohighlight">\(k^0\)</span> can be computed first, then <span class="math notranslate nohighlight">\(k^1\)</span>, and so on.</p>
+</section>
+<section id="implementation-explicitrungekutta">
+<h2>Implementation: <code class="docutils literal notranslate"><span class="pre">ExplicitRungeKutta</span></code><a class="headerlink" href="#implementation-explicitrungekutta" title="Link to this heading">#</a></h2>
+<p>The class <code class="docutils literal notranslate"><span class="pre">ExplicitRungeKutta</span></code> derives from <code class="docutils literal notranslate"><span class="pre">TimeStepper</span></code> and takes a right-hand side <code class="docutils literal notranslate"><span class="pre">NonlinearFunction</span></code> plus a Butcher tableau <span class="math notranslate nohighlight">\((A,b,c)\)</span>.</p>
+<p>Key design points in the implementation:</p>
+<ul class="simple">
+<li><p><strong>Dimension checks:</strong> it requires <code class="docutils literal notranslate"><span class="pre">dimX</span> <span class="pre">==</span> <span class="pre">dimF</span></code> (ODE system <span class="math notranslate nohighlight">\(y' = f(y)\)</span> with matching input/output dimension).</p></li>
+<li><p><strong>Explicitness check:</strong> it validates that <span class="math notranslate nohighlight">\(A\)</span> is strictly lower triangular (up to a small tolerance).</p></li>
+<li><p><strong>Stage storage:</strong> all stage vectors <span class="math notranslate nohighlight">\(k^j\in\mathbb{R}^n\)</span> are stored contiguously in a single vector <code class="docutils literal notranslate"><span class="pre">m_k</span></code> of length <span class="math notranslate nohighlight">\(s\,n\)</span>; stage <span class="math notranslate nohighlight">\(j\)</span> is accessed via <code class="docutils literal notranslate"><span class="pre">m_k.range(j*n,</span> <span class="pre">(j+1)*n)</span></code>.</p></li>
+</ul>
+<p>Algorithmically, each step computes</p>
+<div class="math notranslate nohighlight">
+\[
+y^{(i)} = y_i + \tau\sum_{j=0}^{i-1} a_{ij} k^j,\qquad k^i = f\big(y^{(i)}\big),
+\]</div>
+<p>and finally applies</p>
+<div class="math notranslate nohighlight">
+\[
+y_{i+1} = y_i + \tau\sum_{j=0}^{s-1} b_j k^j.
+\]</div>
+<p>The implementation mirrors this directly: for each stage <span class="math notranslate nohighlight">\(i\)</span> it forms a temporary vector <code class="docutils literal notranslate"><span class="pre">m_y_tmp</span></code> and evaluates the RHS into the stage slice.</p>
+<section id="convenience-tableau-classical-rk4">
+<h3>Convenience tableau: classical RK4<a class="headerlink" href="#convenience-tableau-classical-rk4" title="Link to this heading">#</a></h3>
+<p>The helper <code class="docutils literal notranslate"><span class="pre">ERK_RK4_Tableau()</span></code> returns the classical 4th order explicit RK coefficients <span class="math notranslate nohighlight">\((A,b,c)\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{array}{c|cccc}
+0 \\
+	\frac{1}{2} &amp; \tfrac{1}{2} \\
+	\frac{1}{2} &amp; 0 &amp; \tfrac{1}{2} \\
+1 &amp; 0 &amp; 0 &amp; 1 \\
+\hline
+ &amp; \tfrac{1}{6} &amp; \tfrac{1}{3} &amp; \tfrac{1}{3} &amp; \tfrac{1}{6}
+\end{array}.
+\end{split}\]</div>
+<p>Usage pattern:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="cm">/* std::shared_ptr&lt;NonlinearFunction&gt; */</span><span class="p">;</span>
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ASC_ode</span><span class="o">::</span><span class="n">ERK_RK4_Tableau</span><span class="p">();</span>
+<span class="n">ASC_ode</span><span class="o">::</span><span class="n">ExplicitRungeKutta</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+
+<span class="n">stepper</span><span class="p">.</span><span class="n">doStep</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="implicit-runge-kutta-methods">
+<h2>Implicit Runge-Kutta methods<a class="headerlink" href="#implicit-runge-kutta-methods" title="Link to this heading">#</a></h2>
+<p>Implicit RK methods use a general matrix <span class="math notranslate nohighlight">\(A\)</span> and therefore require solving a coupled nonlinear system for the stage slopes <span class="math notranslate nohighlight">\((k^0,\ldots,k^{s-1})\)</span>.</p>
+<p>Gaussian collocation methods (Gauss-Legendre) are a common choice for high order accuracy; Radau IIA variants enforce a node at <span class="math notranslate nohighlight">\(c_{s-1}=1\)</span> and are often preferred for stiff problems due to better damping (L-stability).</p>
+</section>
+<section id="implementation-implicitrungekutta">
+<h2>Implementation: <code class="docutils literal notranslate"><span class="pre">ImplicitRungeKutta</span></code><a class="headerlink" href="#implementation-implicitrungekutta" title="Link to this heading">#</a></h2>
+<p>The class <code class="docutils literal notranslate"><span class="pre">ImplicitRungeKutta</span></code> also derives from <code class="docutils literal notranslate"><span class="pre">TimeStepper</span></code>, but it builds a nonlinear equation in <span class="math notranslate nohighlight">\(k\in\mathbb{R}^{sn}\)</span> and solves it with the library Newton solver.</p>
+<p>The coupled system is</p>
+<div class="math notranslate nohighlight">
+\[
+k - \widetilde f\big(\tilde y_i + \tau\, (A\otimes k)\big) = 0,
+\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(k=(k^0,\ldots,k^{s-1})\)</span> with each <span class="math notranslate nohighlight">\(k^j\in\mathbb{R}^n\)</span>,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\tilde y_i=(y_i,\ldots,y_i)\in\mathbb{R}^{sn}\)</span> is the stacked current state,</p></li>
+<li><p><span class="math notranslate nohighlight">\(\widetilde f(x_0,\ldots,x_{s-1})=(f(x_0),\ldots,f(x_{s-1}))\)</span> applies the RHS stage-wise,</p></li>
+<li><p><span class="math notranslate nohighlight">\(A\otimes\)</span> is the block operator that mixes stage vectors using the RK matrix <span class="math notranslate nohighlight">\(A\)</span>.</p></li>
+</ul>
+<p>In code, the constructor composes this equation from reusable <code class="docutils literal notranslate"><span class="pre">NonlinearFunction</span></code> building blocks:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MultipleFunc(rhs,</span> <span class="pre">s)</span></code> implements <span class="math notranslate nohighlight">\(\widetilde f\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ConstantFunction(sn)</span></code> holds <span class="math notranslate nohighlight">\(\tilde y_i\)</span> (updated each step).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Parameter</span></code> stores the current step size <span class="math notranslate nohighlight">\(\tau\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MatVecFunc(A,</span> <span class="pre">n)</span></code> implements <span class="math notranslate nohighlight">\(A\otimes\)</span> on a stacked stage vector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">IdentityFunction(sn)</span></code> represents the unknown <span class="math notranslate nohighlight">\(k\)</span> (so the final equation has the form “identity minus something”).</p></li>
+</ul>
+<p>During <code class="docutils literal notranslate"><span class="pre">doStep(tau,</span> <span class="pre">y)</span></code> the implementation:</p>
+<ol class="arabic simple">
+<li><p>Stacks the current state <span class="math notranslate nohighlight">\(y\)</span> into <span class="math notranslate nohighlight">\(\tilde y_i\)</span> and stores it in the constant function.</p></li>
+<li><p>Sets the parameter <span class="math notranslate nohighlight">\(\tau\)</span>.</p></li>
+<li><p>Solves for <code class="docutils literal notranslate"><span class="pre">m_k</span></code> with <code class="docutils literal notranslate"><span class="pre">NewtonSolver(m_equ,</span> <span class="pre">m_k)</span></code> (initial guess <code class="docutils literal notranslate"><span class="pre">m_k</span> <span class="pre">=</span> <span class="pre">0</span></code>).</p></li>
+<li><p>Updates <span class="math notranslate nohighlight">\(y \leftarrow y + \tau\sum_j b_j k^j\)</span>.</p></li>
+</ol>
+<section id="built-in-tableaus-in-implicitrk-hpp">
+<h3>Built-in tableaus in <code class="docutils literal notranslate"><span class="pre">implicitRK.hpp</span></code><a class="headerlink" href="#built-in-tableaus-in-implicitrk-hpp" title="Link to this heading">#</a></h3>
+<p>The header provides example nodes/weights:</p>
+<ul class="simple">
+<li><p><strong>Gauss-Legendre 2-stage</strong>: <code class="docutils literal notranslate"><span class="pre">Gauss2a</span></code>, <code class="docutils literal notranslate"><span class="pre">Gauss2b</span></code>, <code class="docutils literal notranslate"><span class="pre">Gauss2c</span></code>.</p></li>
+<li><p><strong>Gauss-Legendre 3 nodes</strong>: <code class="docutils literal notranslate"><span class="pre">Gauss3c</span></code> (nodes only; see the coefficient generation below).</p></li>
+</ul>
+<p>If you include these headers in multiple translation units, prefer making such global objects <code class="docutils literal notranslate"><span class="pre">inline</span></code> to avoid ODR/linker issues.</p>
+</section>
+</section>
+<section id="computing-tableaus-from-nodes-arbitrary-order">
+<h2>Computing tableaus from nodes (arbitrary order)<a class="headerlink" href="#computing-tableaus-from-nodes-arbitrary-order" title="Link to this heading">#</a></h2>
+<p>The helper <code class="docutils literal notranslate"><span class="pre">computeABfromC(c)</span></code> constructs <span class="math notranslate nohighlight">\((A,b)\)</span> from a chosen node vector <span class="math notranslate nohighlight">\(c\)</span> by enforcing polynomial exactness up to degree <span class="math notranslate nohighlight">\(s-1\)</span>.</p>
+<p>It builds a Vandermonde-like matrix</p>
+<div class="math notranslate nohighlight">
+\[
+M_{ij} = c_j^i\qquad (0\le i,j &lt; s)
+\]</div>
+<p>and solves the moment conditions</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{l=0}^{s-1} b_l c_l^k = \int_0^1 x^k\,dx = \frac{1}{k+1},\qquad 0\le k &lt; s,
+\]</div>
+<p>and for each stage <span class="math notranslate nohighlight">\(j\)</span>:</p>
+<div class="math notranslate nohighlight">
+\[
+\sum_{l=0}^{s-1} a_{jl} c_l^k = \int_0^{c_j} x^k\,dx = \frac{c_j^{k+1}}{k+1},\qquad 0\le k &lt; s.
+\]</div>
+<p>In the implementation, the inverse of <span class="math notranslate nohighlight">\(M\)</span> is computed (via <code class="docutils literal notranslate"><span class="pre">calcInverse</span></code>) and then used to form <span class="math notranslate nohighlight">\(b\)</span> and each row of <span class="math notranslate nohighlight">\(A\)</span>.</p>
+</section>
+<section id="quadrature-helpers-for-gauss-radau-nodes">
+<h2>Quadrature helpers for Gauss / Radau nodes<a class="headerlink" href="#quadrature-helpers-for-gauss-radau-nodes" title="Link to this heading">#</a></h2>
+<p>The file <code class="docutils literal notranslate"><span class="pre">implicitRK.hpp</span></code> includes routines from <a class="reference external" href="https://numerical.recipes/book.html">Numerical Recipes</a> to generate nodes and weights:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GaussLegendre(x,</span> <span class="pre">w)</span></code> for Gauss-Legendre nodes on <span class="math notranslate nohighlight">\([0,1]\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GaussJacobi(x,</span> <span class="pre">w,</span> <span class="pre">alf,</span> <span class="pre">bet)</span></code> for Gauss-Jacobi nodes (used to generate Radau nodes).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GaussRadau(x,</span> <span class="pre">w)</span></code> which computes Radau nodes on <span class="math notranslate nohighlight">\([0,1]\)</span> by calling <code class="docutils literal notranslate"><span class="pre">GaussJacobi</span></code> with parameters <span class="math notranslate nohighlight">\((\alpha,\beta)=(1,0)\)</span> and then appending the endpoint <span class="math notranslate nohighlight">\(1\)</span>.</p></li>
+</ul>
+<p>These utilities let you generate <span class="math notranslate nohighlight">\(c\)</span> (and optionally weights) and then use <code class="docutils literal notranslate"><span class="pre">computeABfromC(c)</span></code> to build the full tableau.</p>
+</section>
+<section id="how-can-you-use-this-implementation">
+<h2>How can you use this implementation?<a class="headerlink" href="#how-can-you-use-this-implementation" title="Link to this heading">#</a></h2>
+<p>As for the other time-steppers, you create a right-hand side object (derived from <code class="docutils literal notranslate"><span class="pre">NonlinearFunction</span></code>), construct the stepper, and call <code class="docutils literal notranslate"><span class="pre">doStep(tau,</span> <span class="pre">y)</span></code> in a loop.</p>
+<section id="explicit-rk-example-rk4">
+<h3>Explicit RK (example: RK4)<a class="headerlink" href="#explicit-rk-example-rk4" title="Link to this heading">#</a></h3>
+<p>Explicit RK methods only need RHS evaluations <code class="docutils literal notranslate"><span class="pre">evaluate(y,</span> <span class="pre">f)</span></code>.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;explicitRK.hpp&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">ASC_ode</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">MassSpring</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ERK_RK4_Tableau</span><span class="p">();</span>
+<span class="n">ExplicitRungeKutta</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">steps</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">stepper</span><span class="p">.</span><span class="n">doStep</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">  </span><span class="n">outfile</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tau</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="implicit-rk-example-gauss-legendre-2">
+<h3>Implicit RK (example: Gauss-Legendre 2)<a class="headerlink" href="#implicit-rk-example-gauss-legendre-2" title="Link to this heading">#</a></h3>
+<p>Implicit RK methods solve a nonlinear system in each step using <code class="docutils literal notranslate"><span class="pre">NewtonSolver</span></code>. For good performance and robustness, your RHS should provide a Jacobian (either by implementing <code class="docutils literal notranslate"><span class="pre">evaluateDeriv</span></code> or by using the AutoDiff adapter discussed on the previous page).</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;implicitRK.hpp&gt;</span>
+
+<span class="k">using</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">ASC_ode</span><span class="p">;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">Gauss3a</span><span class="p">,</span><span class="n">Gauss3b</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">computeABfromC</span><span class="w"> </span><span class="p">(</span><span class="n">Gauss3c</span><span class="p">);</span><span class="w"> </span><span class="c1">// Gauss3c is predefined in implicitRK.hpp</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rhs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">MassSpring</span><span class="o">&gt;</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+<span class="n">ImplicitRungeKutta</span><span class="w"> </span><span class="nf">stepper</span><span class="p">(</span><span class="n">rhs</span><span class="p">,</span><span class="w"> </span><span class="n">Gauss3a</span><span class="p">,</span><span class="w"> </span><span class="n">Gauss3b</span><span class="p">,</span><span class="w"> </span><span class="n">Gauss3c</span><span class="p">);</span>
+
+<span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">steps</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">stepper</span><span class="p">.</span><span class="n">doStep</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="p">);</span>
+<span class="w">    </span><span class="n">outfile</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">tau</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;  &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot; &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">y</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you want a different implicit method, generate nodes <span class="math notranslate nohighlight">\(c\)</span> (e.g. using <code class="docutils literal notranslate"><span class="pre">GaussLegendre</span></code> or <code class="docutils literal notranslate"><span class="pre">GaussRadau</span></code>), compute <code class="docutils literal notranslate"><span class="pre">(A,b)</span></code> via <code class="docutils literal notranslate"><span class="pre">computeABfromC(c)</span></code>, and then construct <code class="docutils literal notranslate"><span class="pre">ImplicitRungeKutta(rhs,</span> <span class="pre">A,</span> <span class="pre">b,</span> <span class="pre">c)</span></code>.</p>
+</section>
+</section>
+<section id="plots-of-mass-spring-system-and-rc-circuit">
+<h2>Plots of mass-spring system and RC circuit<a class="headerlink" href="#plots-of-mass-spring-system-and-rc-circuit" title="Link to this heading">#</a></h2>
+<section id="explicit-runge-kutta-rk4">
+<h3>Explicit Runge-Kutta (RK4)<a class="headerlink" href="#explicit-runge-kutta-rk4" title="Link to this heading">#</a></h3>
+<a class="reference internal image-reference" href="_images/ExplicitRungeKutta.png"><img alt="Time Evolution and Phase Plot of Mass-Spring System solved with Explicit Runge-Kutta RK4" src="_images/ExplicitRungeKutta.png" style="width: 800px;" />
+</a>
+<a class="reference internal image-reference" href="_images/RC_ExplicitRungeKutta.png"><img alt="Time Evolution of RC Circuit solved with Explicit Runge-Kutta RK4" src="_images/RC_ExplicitRungeKutta.png" style="width: 600px;" />
+</a>
+</section>
+<section id="implicit-runge-kutta-gauss-legendre-2">
+<h3>Implicit Runge-Kutta (Gauss-Legendre 2)<a class="headerlink" href="#implicit-runge-kutta-gauss-legendre-2" title="Link to this heading">#</a></h3>
+<a class="reference internal image-reference" href="_images/ImplicitRungeKutta.png"><img alt="Time Evolution and Phase Plot of Mass-Spring System solved with Implicit Runge-Kutta Gauss-Legendre2" src="_images/ImplicitRungeKutta.png" style="width: 800px;" />
+</a>
+<a class="reference internal image-reference" href="_images/RC_ImplicitRungeKutta.png"><img alt="Time Evolution of RC Circuit solved with Implicit Runge-Kutta Gauss-Legendre2" src="_images/RC_ImplicitRungeKutta.png" style="width: 600px;" />
+</a>
+</section>
+</section>
+</section>
+
     <script type="text/x-thebe-config">
     {
         requestKernel: true,
@@ -414,7 +672,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">&lt;no title&gt;</p>
+        <p class="prev-next-title">Applications</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -433,9 +691,31 @@ document.write(`
     <i class="fa-solid fa-list"></i> Contents
   </div>
   <nav class="bd-toc-nav page-toc">
-    <ul class="simple visible nav section-nav flex-column">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#mathematical-overview">Mathematical Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-rk-methods">Explicit RK methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-explicitrungekutta">Implementation: <code class="docutils literal notranslate"><span class="pre">ExplicitRungeKutta</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convenience-tableau-classical-rk4">Convenience tableau: classical RK4</a></li>
 </ul>
-
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-runge-kutta-methods">Implicit Runge-Kutta methods</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#implementation-implicitrungekutta">Implementation: <code class="docutils literal notranslate"><span class="pre">ImplicitRungeKutta</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#built-in-tableaus-in-implicitrk-hpp">Built-in tableaus in <code class="docutils literal notranslate"><span class="pre">implicitRK.hpp</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computing-tableaus-from-nodes-arbitrary-order">Computing tableaus from nodes (arbitrary order)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quadrature-helpers-for-gauss-radau-nodes">Quadrature helpers for Gauss / Radau nodes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-can-you-use-this-implementation">How can you use this implementation?</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-rk-example-rk4">Explicit RK (example: RK4)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-rk-example-gauss-legendre-2">Implicit RK (example: Gauss-Legendre 2)</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#plots-of-mass-spring-system-and-rc-circuit">Plots of mass-spring system and RC circuit</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explicit-runge-kutta-rk4">Explicit Runge-Kutta (RK4)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#implicit-runge-kutta-gauss-legendre-2">Implicit Runge-Kutta (Gauss-Legendre 2)</a></li>
+</ul>
+</li>
+</ul>
   </nav></div>
 
 </div></div>
