@@ -383,13 +383,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>For a constant mesh size <span class="math notranslate nohighlight">\(\tau\)</span>, the numerical update is defined by the following equation:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-8e6ef0c3-bdcc-4aed-8e75-43ac17c322ca">
-<span class="eqno">(1)<a class="headerlink" href="#equation-8e6ef0c3-bdcc-4aed-8e75-43ac17c322ca" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-235cf9d5-6049-4ce3-8155-c64f7554ae27">
+<span class="eqno">(1)<a class="headerlink" href="#equation-235cf9d5-6049-4ce3-8155-c64f7554ae27" title="Permalink to this equation">#</a></span>\[\begin{equation}
     y_{n+1} = y_n + \tau f(y_{n+1})
 \end{equation}\]</div>
 <p>To determine the value of <span class="math notranslate nohighlight">\(y_{n+1}\)</span>, we must solve a non-linear system of equations at every time step:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-e76fd209-57ec-4a63-af02-c88dca5f5ac3">
-<span class="eqno">(2)<a class="headerlink" href="#equation-e76fd209-57ec-4a63-af02-c88dca5f5ac3" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-3d733cc3-05c0-4205-9dc6-1a9299d2057a">
+<span class="eqno">(2)<a class="headerlink" href="#equation-3d733cc3-05c0-4205-9dc6-1a9299d2057a" title="Permalink to this equation">#</a></span>\[\begin{equation}
     G(y_{n+1}) = y_{n+1} - y_n - \tau f(y_{n+1}) = 0
 \end{equation}\]</div>
 <p>In this library, the root of <span class="math notranslate nohighlight">\(G(y_{n+1})\)</span> is found using a Newton solver.</p>

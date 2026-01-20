@@ -382,13 +382,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>The Newton solver finds a root <span class="math notranslate nohighlight">\(x\)</span> such that <span class="math notranslate nohighlight">\(F(x) = 0\)</span> by iteratively applying the following formula:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-56204978-d506-4486-b053-3d311c64c643">
-<span class="eqno">(5)<a class="headerlink" href="#equation-56204978-d506-4486-b053-3d311c64c643" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-563afeef-a854-44db-9c8a-2e5d14631a1e">
+<span class="eqno">(5)<a class="headerlink" href="#equation-563afeef-a854-44db-9c8a-2e5d14631a1e" title="Permalink to this equation">#</a></span>\[\begin{equation}
     x_{k+1} = x_k - J_F(x_k)^{-1} F(x_k)
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(J_F(x_k)\)</span> is the Jacobian matrix evaluated at <span class="math notranslate nohighlight">\(x_k\)</span>. The iteration terminates when the residual norm satisfies:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-830a477b-0d4f-49ed-9b88-0da73643674f">
-<span class="eqno">(6)<a class="headerlink" href="#equation-830a477b-0d4f-49ed-9b88-0da73643674f" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-ad16440c-36f9-4554-bcc2-dc626a217d24">
+<span class="eqno">(6)<a class="headerlink" href="#equation-ad16440c-36f9-4554-bcc2-dc626a217d24" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \|F(x_{k+1})\| &lt; \text{tol}
 \end{equation}\]</div>
 <p>or after reaching a maximum number of steps.</p>

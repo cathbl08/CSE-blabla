@@ -27,7 +27,7 @@ In practice, the interesting part is what you can simulate with the resulting OD
 The following clip demonstrates a mass–spring scene generated via the Python bindings.
 
 <video controls width="900">
-	<source src="videos/mass_spring.mp4" type="video/mp4">
+	<source src="_static/videos/mass_spring.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
@@ -45,35 +45,35 @@ In the implementation, such constraints can be enforced using Lagrange multiplie
 ### Double pendulum
 
 <video controls width="900">
-	<source src="videos/double_pendulum.mp4" type="video/mp4">
+	<source src="_static/videos/double_pendulum.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
 ### Chain
 
 <video controls width="900">
-	<source src="videos/chain.mp4" type="video/mp4">
+	<source src="_static/videos/chain.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
 ### Crane-like structure (vibration)
 
 <video controls width="900">
-	<source src="videos/crane.mp4" type="video/mp4">
+	<source src="_static/videos/crane.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
 ### Spinning top / Kreisel
 
 <video controls width="900">
-	<source src="videos/kreisel.mp4" type="video/mp4">
+	<source src="_static/videos/kreisel.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
 ### Spinning top / Kreisel (variant)
 
 <video controls width="900">
-	<source src="videos/kreisel_notreally.mp4" type="video/mp4">
+	<source src="_static/videos/kreisel_notreally.mp4" type="video/mp4">
 	Your browser does not support the video tag.
 </video>
 
