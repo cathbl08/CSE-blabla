@@ -8,11 +8,28 @@ parts:
   - caption: Fast-CSErious
     chapters:
       - file: FastCSErious.md
+        title: Vectorization
+      - file: fast-pipelining.md
+        title: Pipelining
+      - file: fast-caches.md
+        title: Cache Optimization
+      - file: fast-parallelization.md
+        title: Parallelization
   
   - caption: ODE-to-CSE
     chapters:
       - file: ODEtoCSE.md
-
+        title: Introduction
+      - file: ode-improved.md
+        title: Improved Euler Method
+      - file: ode-implicit.md
+        title: Implicit Euler Method
+      - file: ode-crank.md
+        title: Crank-Nicolson Method
+      - file: ode-newton.md
+        title: Newton Solver
+      - file: ode-autodiff.md
+        title: Automatic Differentiation
 
 
 
