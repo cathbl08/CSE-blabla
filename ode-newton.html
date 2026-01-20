@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'ode-newton';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Automatic Differentiation" href="ode-autodiff.html" />
     <link rel="prev" title="Crank-Nicolson Method" href="ode-crank.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -194,6 +195,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ode-implicit.html">Implicit Euler Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Newton Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-autodiff.html">Automatic Differentiation</a></li>
 </ul>
 
     </div>
@@ -378,13 +380,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>The Newton solver finds a root <span class="math notranslate nohighlight">\(x\)</span> such that <span class="math notranslate nohighlight">\(F(x) = 0\)</span> by iteratively applying the following formula:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-16a7a4aa-b1e0-4b85-b413-7503188fa7d3">
-<span class="eqno">(5)<a class="headerlink" href="#equation-16a7a4aa-b1e0-4b85-b413-7503188fa7d3" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-f41f1735-d3ee-4f4a-8518-7b20ca2519f2">
+<span class="eqno">(5)<a class="headerlink" href="#equation-f41f1735-d3ee-4f4a-8518-7b20ca2519f2" title="Permalink to this equation">#</a></span>\[\begin{equation}
     x_{k+1} = x_k - J_F(x_k)^{-1} F(x_k)
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(J_F(x_k)\)</span> is the Jacobian matrix evaluated at <span class="math notranslate nohighlight">\(x_k\)</span>. The iteration terminates when the residual norm satisfies:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-6c974562-7873-4471-9346-6de59b58becd">
-<span class="eqno">(6)<a class="headerlink" href="#equation-6c974562-7873-4471-9346-6de59b58becd" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-e1d098be-ce4b-4e68-8511-a3765bf0076e">
+<span class="eqno">(6)<a class="headerlink" href="#equation-e1d098be-ce4b-4e68-8511-a3765bf0076e" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \|F(x_{k+1})\| &lt; \text{tol}
 \end{equation}\]</div>
 <p>or after reaching a maximum number of steps.</p>
@@ -453,6 +455,15 @@ In our implementation, this typically involves solving a linear system or invert
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Crank-Nicolson Method</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="ode-autodiff.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Automatic Differentiation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -390,8 +390,8 @@ document.write(`
 <section id="numerical-differentiation">
 <h2>Numerical Differentiation<a class="headerlink" href="#numerical-differentiation" title="Link to this heading">#</a></h2>
 <p>Numerical differentiation approximates the derivative without requiring changes to the function’s implementation. Our library employs a central difference quotient for the i-th partial derivative:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-793c3e10-7034-40d0-9cb9-903865340b25">
-<span class="eqno">(7)<a class="headerlink" href="#equation-793c3e10-7034-40d0-9cb9-903865340b25" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-30409e45-fde7-4197-83dc-5fa9e0c79d24">
+<span class="eqno">(7)<a class="headerlink" href="#equation-30409e45-fde7-4197-83dc-5fa9e0c79d24" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \frac{\partial f}{\partial x_i} (x) \approx \frac{f(x + \epsilon e_i) - f(x - \epsilon e_i)}{2\epsilon}
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(e_i\)</span> is the unit vector in the i-th direction and <span class="math notranslate nohighlight">\(\epsilon\)</span> is a small perturbation value.</p>

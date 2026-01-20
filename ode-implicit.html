@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=9c3e77be" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css?v=6644e6bb" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -195,6 +195,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Implicit Euler Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-crank.html">Crank-Nicolson Method</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ode-newton.html">Newton Solver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ode-autodiff.html">Automatic Differentiation</a></li>
 </ul>
 
     </div>
@@ -379,13 +380,13 @@ document.write(`
 <section id="mathematical-overview">
 <h2>Mathematical Overview<a class="headerlink" href="#mathematical-overview" title="Link to this heading">#</a></h2>
 <p>For a constant mesh size <span class="math notranslate nohighlight">\(\tau\)</span>, the numerical update is defined by the following equation:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-11e4ee5b-887b-4222-a662-fef15c69d7c6">
-<span class="eqno">(1)<a class="headerlink" href="#equation-11e4ee5b-887b-4222-a662-fef15c69d7c6" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-afea3080-91aa-4cbd-9364-cdf1070042ba">
+<span class="eqno">(1)<a class="headerlink" href="#equation-afea3080-91aa-4cbd-9364-cdf1070042ba" title="Permalink to this equation">#</a></span>\[\begin{equation}
     y_{n+1} = y_n + \tau f(y_{n+1})
 \end{equation}\]</div>
 <p>To determine the value of <span class="math notranslate nohighlight">\(y_{n+1}\)</span>, we must solve a non-linear system of equations at every time step:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-4160a614-b492-482f-a5eb-91f8a8070420">
-<span class="eqno">(2)<a class="headerlink" href="#equation-4160a614-b492-482f-a5eb-91f8a8070420" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-a70c3c8b-d7f4-4d2e-95a2-76105768cb1c">
+<span class="eqno">(2)<a class="headerlink" href="#equation-a70c3c8b-d7f4-4d2e-95a2-76105768cb1c" title="Permalink to this equation">#</a></span>\[\begin{equation}
     G(y_{n+1}) = y_{n+1} - y_n - \tau f(y_{n+1}) = 0
 \end{equation}\]</div>
 <p>In this library, the root of <span class="math notranslate nohighlight">\(G(y_{n+1})\)</span> is found using a Newton solver.</p>
