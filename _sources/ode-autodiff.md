@@ -46,7 +46,7 @@ You can explore a full working example in `demos/demo_autodiff.cpp`.
 
 ### Basic usage
 
-To calculate gradients, you must first define your independent variables using the Variable helper class. Variable<I>(value) initializes the I-th independent variable, setting its partial derivative at index I to 1.0.
+To calculate gradients, you must first define your independent variables using the Variable helper class. $Variable<I>(value)$ initializes the I-th independent variable, setting its partial derivative at index I to 1.0.
 
 ```cpp
 #include <autodiff.hpp>

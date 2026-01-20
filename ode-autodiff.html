@@ -62,6 +62,7 @@
     <script>DOCUMENTATION_OPTIONS.pagename = 'ode-autodiff';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="&lt;no title&gt;" href="ode-RK.html" />
     <link rel="prev" title="Newton Solver" href="ode-newton.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -389,8 +390,8 @@ document.write(`
 <section id="numerical-differentiation">
 <h2>Numerical Differentiation<a class="headerlink" href="#numerical-differentiation" title="Link to this heading">#</a></h2>
 <p>Numerical differentiation approximates the derivative without requiring changes to the function’s implementation. Our library employs a central difference quotient for the i-th partial derivative:</p>
-<div class="amsmath math notranslate nohighlight" id="equation-d97424b7-3bd7-4eee-a0e9-8a07ef28802b">
-<span class="eqno">(7)<a class="headerlink" href="#equation-d97424b7-3bd7-4eee-a0e9-8a07ef28802b" title="Permalink to this equation">#</a></span>\[\begin{equation}
+<div class="amsmath math notranslate nohighlight" id="equation-793c3e10-7034-40d0-9cb9-903865340b25">
+<span class="eqno">(7)<a class="headerlink" href="#equation-793c3e10-7034-40d0-9cb9-903865340b25" title="Permalink to this equation">#</a></span>\[\begin{equation}
     \frac{\partial f}{\partial x_i} (x) \approx \frac{f(x + \epsilon e_i) - f(x - \epsilon e_i)}{2\epsilon}
 \end{equation}\]</div>
 <p>where <span class="math notranslate nohighlight">\(e_i\)</span> is the unit vector in the i-th direction and <span class="math notranslate nohighlight">\(\epsilon\)</span> is a small perturbation value.</p>
@@ -418,7 +419,7 @@ Unlike numerical differentiation, AD does not use a perturbation parameter <span
 <p>You can explore a full working example in <code class="docutils literal notranslate"><span class="pre">demos/demo_autodiff.cpp</span></code>.</p>
 <section id="basic-usage">
 <h3>Basic usage<a class="headerlink" href="#basic-usage" title="Link to this heading">#</a></h3>
-<p>To calculate gradients, you must first define your independent variables using the Variable helper class. Variable<I>(value) initializes the I-th independent variable, setting its partial derivative at index I to 1.0.</p>
+<p>To calculate gradients, you must first define your independent variables using the Variable helper class. <span class="math notranslate nohighlight">\(Variable&lt;I&gt;(value)\)</span> initializes the I-th independent variable, setting its partial derivative at index I to 1.0.</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;autodiff.hpp&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
 
@@ -558,6 +559,15 @@ Here is how to implement it to support AutoDiff:</p>
         <p class="prev-next-subtitle">previous</p>
         <p class="prev-next-title">Newton Solver</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="ode-RK.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">&lt;no title&gt;</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>
