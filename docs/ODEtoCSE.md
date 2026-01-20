@@ -32,12 +32,20 @@ After the build is complete, you can run the demonstration executable from the b
 ./test_ode
 ```
 
-This generates simulation results in a text file (e.g., `output_test_ode.txt`).
+This generates simulation results in text files (`output_test_ode_<Method>.txt` for a mass-spring system and `output_test_ode_RC_<Method>.txt` for an electric circuit, respectively) -- one for each ODE solver method implemented.
 To visualize these results and generate plots for the mass-spring system, navigate to the demos folder and use the Python script:
 
 ```console
 python3 plotmassspring.py
 ```
+
+To do the same for the RC circuit, run:
+
+```console
+python3 plotRC.py
+```
+
+in the demos folder.
 
 ### Changing the simulation method
 
