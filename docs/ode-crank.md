@@ -71,3 +71,8 @@ for (int i = 0; i < steps; i++)
 }
 ```
 
+### Plots of mass-spring system and RC circuit
+
+<img src="images/CrankNicholson.png" alt="Time Evolution and Phase Plot of Mass-Spring System solved with Crank-Nicholson Method"  width="800px">
+
+<img src="images/RC_CrankNicholson.png" alt="Time Evolution of RC Circuit solved with Crank-Nicholson Method"  width="600px">
